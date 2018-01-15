@@ -59,7 +59,7 @@ deploy:
   skip_cleanup: true
   script:
     docker build --tag eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG .;
-    docker tag eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG eu.grc..io/chmsqrt2-truesparrow-common/identity:latest;
+    docker tag eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG eu.grc.io/chmsqrt2-truesparrow-common/identity:latest;
     docker login -u _json_key -p "$(cat gcp-ci-docker-pusher.json)" https://eu.gcr.io;
     docker push eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG;
     docker push eu.gcr.io/chmsqrt2-truesparrow-common/identity:latest
