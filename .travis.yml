@@ -60,7 +60,7 @@ deploy:
   script:
     docker build --tag eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG .;
     docker tag eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG eu.grc.io/chmsqrt2-truesparrow-common/identity:latest;
-    docker login -u _json_key -p "$(cat gcp-ci-docker-pusher.json)" https://eu.gcr.io;
+    docker login --username _json_key --password "$(cat gcp-ci-docker-pusher-key.json)" https://eu.gcr.io;
     docker push eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG;
     docker push eu.gcr.io/chmsqrt2-truesparrow-common/identity:latest
   on:
