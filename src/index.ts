@@ -1,6 +1,7 @@
 import * as auth0 from 'auth0'
 import * as express from 'express'
 import * as knex from 'knex'
+import 'log-timestamp'
 
 import * as config from './config'
 import { newIdentityRouter } from './identity-router'
@@ -17,8 +18,6 @@ async function main() {
         connection: config.DATABASE_URL
     });
     const repository = new Repository(conn);
-    await repository.init();
-
     const identityRouter = newIdentityRouter({
         env: config.ENV,
         name: config.NAME,
@@ -29,6 +28,12 @@ async function main() {
         rollbarToken: config.ROLLBAR_TOKEN
     }, auth0Client, repository);
 
+    console.log('Starting up');
+
+    console.log('Initializing repository & performing migrations');
+    await repository.init();
+
+    console.log('Starting web server');
     const app = express();
     app.disable('x-powered-by');
     app.use('/', identityRouter);
