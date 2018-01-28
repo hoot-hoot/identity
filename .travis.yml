@@ -28,6 +28,7 @@ env:
   - ORIGIN=null
   - CLIENTS=null
   - AUTH0_CLIENT_ID=null
+  - AUTH0_CLIENT_SECRET=null
   - AUTH0_DOMAIN=null
   - LOGGLY_TOKEN=null
   - LOGGLY_SUBDOMAIN=null

@@ -10,8 +10,8 @@ import { Repository } from './repository'
 
 async function main() {
     const auth0Client = new auth0.AuthenticationClient({
-        clientId: config.AUTH0_CLIENT_ID,
-        domain: config.AUTH0_DOMAIN
+        clientId: config.AUTH0_SERVER_CONFIG.clientId,
+        domain: config.AUTH0_SERVER_CONFIG.domain
     });
     const conn = knex({
         client: 'pg',

@@ -2,6 +2,7 @@ import { config } from 'dotenv'
 
 import { Env, parseEnv, isOnServer } from '@truesparrow/common-js'
 import { getFromEnv } from '@truesparrow/common-server-js'
+import { Auth0ServerConfig } from '@truesparrow/identity-sdk-js'
 
 config();
 
@@ -14,8 +15,12 @@ export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('DATABASE_MIGRATIONS_D
 export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('DATABASE_MIGRATIONS_TABLE');
 export const ORIGIN: string = getFromEnv('ORIGIN');
 export const CLIENTS: string[] = getFromEnv('CLIENTS').split(',');
-export const AUTH0_CLIENT_ID: string = getFromEnv('AUTH0_CLIENT_ID');
-export const AUTH0_DOMAIN: string = getFromEnv('AUTH0_DOMAIN');
+export const AUTH0_SERVER_CONFIG: Auth0ServerConfig = {
+    clientId: getFromEnv('AUTH0_CLIENT_ID'),
+    clientSecret: getFromEnv('AUTH0_CLIENT_SECRET'),
+    domain: getFromEnv('AUTH0_DOMAIN'),
+    loginCallbackUri: '' // Not used here
+};
 
 export let LOGGLY_TOKEN: string | null;
 export let LOGGLY_SUBDOMAIN: string | null;
