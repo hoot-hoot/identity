@@ -282,7 +282,7 @@ export function newIdentityRouter(
                 return;
             }
 
-            auth0Profile = auth0ProfileMarshaller.extract(JSON.parse(auth0ProfileSerialized));
+            auth0Profile = auth0ProfileMarshaller.extract(auth0ProfileSerialized);
         } catch (e) {
             req.log.error(e, 'Auth0 Error');
             req.errorLog.error(e);
@@ -342,7 +342,7 @@ export function newIdentityRouter(
                 return;
             }
 
-            auth0Profile = auth0ProfileMarshaller.extract(JSON.parse(auth0ProfileSerialized));
+            auth0Profile = auth0ProfileMarshaller.extract(auth0ProfileSerialized);
         } catch (e) {
             req.log.error(e, 'Auth0 Error');
             req.errorLog.error(e);

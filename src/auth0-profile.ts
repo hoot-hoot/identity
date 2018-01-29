@@ -21,7 +21,7 @@ export class Auth0Profile {
     picture: string;
 
     /** A unique user identifier */
-    @MarshalWith(r.StringMarshaller, 'user_id')
+    @MarshalWith(r.StringMarshaller, 'sub')
     userId: string;
 
     /** The user's language code */

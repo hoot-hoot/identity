@@ -331,7 +331,7 @@ describe('IdentityRouter', () => {
             const appAgent = buildAppAgent();
 
             td.when(auth0Client.getProfile(theSessionTokenWithUser.userToken as string))
-                .thenReturn(JSON.stringify(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe)));
+                .thenReturn(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe));
             td.when(repository.getOrCreateUserOnSession(theSessionTokenWithUser, auth0ProfileJohnDoe, td.matchers.isA(Date), theSessionWithUser.xsrfToken))
                 .thenReturn([theSessionTokenWithUser, theSessionWithUser, true]);
 
@@ -360,7 +360,7 @@ describe('IdentityRouter', () => {
             const appAgent = buildAppAgent();
 
             td.when(auth0Client.getProfile(theSessionTokenWithUser.userToken as string))
-                .thenReturn(JSON.stringify(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe)));
+                .thenReturn(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe));
             td.when(repository.getOrCreateUserOnSession(theSessionTokenWithUser, auth0ProfileJohnDoe, td.matchers.isA(Date), theSessionWithUser.xsrfToken))
                 .thenReturn([theSessionTokenWithUser, theSessionWithUser, false]);
 
@@ -404,7 +404,7 @@ describe('IdentityRouter', () => {
             const appAgent = buildAppAgent();
 
             td.when(auth0Client.getProfile(theSessionTokenWithUser.userToken as string))
-                .thenReturn(JSON.stringify(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe)));
+                .thenReturn(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe));
             td.when(repository.getUserOnSession(theSessionTokenWithUser, auth0ProfileJohnDoe))
                 .thenReturn(theSessionWithUser);
 
@@ -717,7 +717,7 @@ describe('IdentityRouter', () => {
                 }
 
                 td.when(auth0Client.getProfile(td.matchers.anything()))
-                    .thenReturn(JSON.stringify(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe)));
+                    .thenReturn(auth0ProfileMarshaller.pack(auth0ProfileJohnDoe));
                 td.when((repository as any)[methodName](), { ignoreExtraArgs: true }).thenThrow(error);
 
                 await (restOfTest as Test)
