@@ -36,7 +36,7 @@ async function main() {
     console.log('Starting web server');
     const app = express();
     app.disable('x-powered-by');
-    app.use('/', identityRouter);
+    app.use('/api', identityRouter);
     app.listen(config.PORT, config.ADDRESS, () => {
         console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
     });

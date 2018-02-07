@@ -1,5 +1,5 @@
 exports.up = (knex, Promise) => knex.schema.raw(`
-    CREATE TABLE identity.session_event (
+    CREATE TABLE identity.session_events (
         -- Primary key
         id Serial,
         PRIMARY KEY (id),
@@ -8,10 +8,10 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         timestamp Timestamp NOT NULL,
         data Jsonb NULL,
         -- Foreign key
-        session_id Uuid NOT NULL REFERENCES identity.session(id)
+        session_id Uuid NOT NULL REFERENCES identity.sessions(id)
     );
 
-    CREATE INDEX session_event_session_id ON identity.session_event(session_id);
+    CREATE INDEX session_events_session_id ON identity.session_events(session_id);
 `);
 
 exports.down = (knex, Promise) => knex.schema.raw(`

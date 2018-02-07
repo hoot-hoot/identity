@@ -77,27 +77,27 @@ export class Repository {
     public static readonly MAX_NUMBER_OF_USERS_TO_RETURN: number = 20;
 
     private static readonly _sessionFields = [
-        'identity.session.id as session_id',
-        'identity.session.state as session_state',
-        'identity.session.xsrf_token as session_xsrf_token',
-        'identity.session.agreed_to_cookie_policy as session_agreed_to_cookie_policy',
-        'identity.session.user_id as session_user_id',
-        'identity.session.time_created as session_time_created',
-        'identity.session.time_last_updated as session_time_last_updated',
-        'identity.session.time_removed as session_time_removed'
+        'identity.sessions.id as session_id',
+        'identity.sessions.state as session_state',
+        'identity.sessions.xsrf_token as session_xsrf_token',
+        'identity.sessions.agreed_to_cookie_policy as session_agreed_to_cookie_policy',
+        'identity.sessions.user_id as session_user_id',
+        'identity.sessions.time_created as session_time_created',
+        'identity.sessions.time_last_updated as session_time_last_updated',
+        'identity.sessions.time_removed as session_time_removed'
     ];
 
     private static readonly _userFields = [
-        'identity.user.id as user_id',
-        'identity.user.state as user_state',
-        'identity.user.role as user_role',
-        'identity.user.agreed_to_cookie_policy as user_agreed_to_cookie_policy',
-        'identity.user.provider_user_id as user_provider_user_id',
-        'identity.user.provider_user_id_hash as user_provider_user_id_hash',
-        'identity.user.provider_profile as user_provider_profile',
-        'identity.user.time_created as user_time_created',
-        'identity.user.time_last_updated as user_time_last_updated',
-        'identity.user.time_removed as user_time_removed'
+        'identity.users.id as user_id',
+        'identity.users.state as user_state',
+        'identity.users.role as user_role',
+        'identity.users.agreed_to_cookie_policy as user_agreed_to_cookie_policy',
+        'identity.users.provider_user_id as user_provider_user_id',
+        'identity.users.provider_user_id_hash as user_provider_user_id_hash',
+        'identity.users.provider_profile as user_provider_profile',
+        'identity.users.time_created as user_time_created',
+        'identity.users.time_last_updated as user_time_last_updated',
+        'identity.users.time_removed as user_time_removed'
     ];
 
     private readonly _conn: knex;
@@ -140,7 +140,7 @@ export class Repository {
             // If there's some auth info, might as well try to retrieve it.
             if (sessionToken != null) {
                 const dbSessions = await trx
-                    .from('identity.session')
+                    .from('identity.sessions')
                     .select(Repository._sessionFields)
                     .whereIn('state', [SessionState.Active, SessionState.ActiveAndLinkedWithUser])
                     .andWhere('id', sessionToken.sessionId)
@@ -159,7 +159,7 @@ export class Repository {
                 const sessionId = uuid();
                 const xsrfToken = randomBytes(48).toString('base64');
                 const dbSessions = await trx
-                    .from('identity.session')
+                    .from('identity.sessions')
                     .returning(Repository._sessionFields)
                     .insert({
                         'id': sessionId,
@@ -175,7 +175,7 @@ export class Repository {
                 dbSession = dbSessions[0];
 
                 await trx
-                    .from('identity.session_event')
+                    .from('identity.session_events')
                     .insert({
                         'type': SessionEventType.Created,
                         'timestamp': requestTime,
@@ -197,7 +197,7 @@ export class Repository {
      *     a {@link SessionNotFoundError}.
      */
     async getSession(sessionToken: SessionToken): Promise<Session> {
-        const dbSessions = await this._conn('identity.session')
+        const dbSessions = await this._conn('identity.sessions')
             .select(Repository._sessionFields)
             .whereIn('state', [SessionState.Active, SessionState.ActiveAndLinkedWithUser])
             .andWhere('id', sessionToken.sessionId)
@@ -231,7 +231,7 @@ export class Repository {
     async removeSession(sessionToken: SessionToken, requestTime: Date, xsrfToken: string): Promise<void> {
         await this._conn.transaction(async (trx) => {
             const dbSessions = await trx
-                .from('identity.session')
+                .from('identity.sessions')
                 .whereIn('state', [SessionState.Active, SessionState.ActiveAndLinkedWithUser])
                 .andWhere('id', sessionToken.sessionId)
                 .returning(['id', 'xsrf_token'])
@@ -252,7 +252,7 @@ export class Repository {
             }
 
             await trx
-                .from('identity.session_event')
+                .from('identity.session_events')
                 .insert({
                     'type': SessionEventType.Removed,
                     'timestamp': requestTime,
@@ -284,7 +284,7 @@ export class Repository {
 
         await this._conn.transaction(async (trx) => {
             const dbSessions = await trx
-                .from('identity.session')
+                .from('identity.sessions')
                 .whereIn('state', [SessionState.Active, SessionState.ActiveAndLinkedWithUser])
                 .andWhere('id', sessionToken.sessionId)
                 .returning(Repository._sessionFields)
@@ -304,7 +304,7 @@ export class Repository {
             }
 
             await trx
-                .from('identity.session_event')
+                .from('identity.session_events')
                 .insert({
                     'type': SessionEventType.AgreedToCookiePolicy,
                     'timestamp': requestTime,
@@ -314,7 +314,7 @@ export class Repository {
 
             if (dbSession['session_user_id'] != null) {
                 const dbUsers = await trx
-                    .from('identity.user')
+                    .from('identity.users')
                     .where({ id: dbSession['session_user_id'], state: UserState.Active })
                     .returning(Repository._userFields)
                     .update({
@@ -327,7 +327,7 @@ export class Repository {
                 }
 
                 await trx
-                    .from('identity.user_event')
+                    .from('identity.user_events')
                     .insert({
                         'type': UserEventType.AgreedToCookiePolicy,
                         'timestamp': requestTime,
@@ -377,7 +377,7 @@ export class Repository {
 
         await this._conn.transaction(async (trx) => {
             const dbSessions = await trx
-                .from('identity.session')
+                .from('identity.sessions')
                 .select(Repository._sessionFields)
                 .whereIn('state', [SessionState.Active, SessionState.ActiveAndLinkedWithUser])
                 .andWhere('id', sessionToken.sessionId)
@@ -394,13 +394,13 @@ export class Repository {
             }
 
             const rawResponse = await trx.raw(`
-                    insert into identity.user (state, role, agreed_to_cookie_policy, provider_user_id, provider_user_id_hash, provider_profile, time_created, time_last_updated)
+                    insert into identity.users (state, role, agreed_to_cookie_policy, provider_user_id, provider_user_id_hash, provider_profile, time_created, time_last_updated)
                     values (?, ?, ?, ?, ?, ?, ?, ?)
                     on conflict (provider_user_id_hash)
                     do update
                     set time_last_updated = excluded.time_last_updated,
                         state=${UserState.Active},
-                        agreed_to_cookie_policy = identity.user.agreed_to_cookie_policy OR excluded.agreed_to_cookie_policy,
+                        agreed_to_cookie_policy = identity.users.agreed_to_cookie_policy OR excluded.agreed_to_cookie_policy,
                         provider_profile = excluded.provider_profile
                     returning id, time_created, time_last_updated, agreed_to_cookie_policy`,
                 [UserState.Active, Role.Regular, dbSession['session_agreed_to_cookie_policy'], userId, userIdHash, this._auth0ProfileMarshaller.pack(auth0Profile), requestTime, requestTime]);
@@ -418,7 +418,7 @@ export class Repository {
                 : UserEventType.Recreated;
 
             await trx
-                .from('identity.user_event')
+                .from('identity.user_events')
                 .insert({
                     'type': userEventType,
                     'timestamp': requestTime,
@@ -428,7 +428,7 @@ export class Repository {
 
             if (userEventType == UserEventType.Created && dbUserAgreedToCookiePolicy == true) {
                 await trx
-                    .from('identity.user_event')
+                    .from('identity.user_events')
                     .insert({
                         'type': UserEventType.AgreedToCookiePolicy,
                         'timestamp': requestTime,
@@ -439,7 +439,7 @@ export class Repository {
 
             if (dbSession['session_user_id'] == null) {
                 await trx
-                    .from('identity.session')
+                    .from('identity.sessions')
                     .where({ id: sessionToken.sessionId })
                     .update({
                         state: SessionState.ActiveAndLinkedWithUser,
@@ -449,7 +449,7 @@ export class Repository {
                     });
 
                 await trx
-                    .from('identity.session_event')
+                    .from('identity.session_events')
                     .insert({
                         'type': SessionEventType.LinkedWithUser,
                         'timestamp': requestTime,
@@ -497,7 +497,7 @@ export class Repository {
         const userIdHash = auth0Profile.getUserIdHash();
 
         // Lookup id hash in database
-        const dbUsers = await this._conn('identity.user')
+        const dbUsers = await this._conn('identity.users')
             .select(Repository._userFields)
             .where({ provider_user_id_hash: userIdHash, state: UserState.Active })
             .limit(1);
@@ -508,7 +508,7 @@ export class Repository {
 
         const dbUser = dbUsers[0];
 
-        const dbSessions = await this._conn('identity.session')
+        const dbSessions = await this._conn('identity.sessions')
             .select(Repository._sessionFields)
             .where('state', SessionState.ActiveAndLinkedWithUser)
             .andWhere('id', sessionToken.sessionId)
@@ -548,7 +548,7 @@ export class Repository {
             throw new RepositoryError(`Can't retrieve ${ids.length} users`);
         }
 
-        const dbUsers = await this._conn('identity.user')
+        const dbUsers = await this._conn('identity.users')
             .select(Repository._userFields)
             .whereIn('id', ids)
             .andWhere({ state: UserState.Active })

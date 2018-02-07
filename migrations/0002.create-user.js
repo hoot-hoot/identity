@@ -1,5 +1,5 @@
 exports.up = (knex, Promise) => knex.schema.raw(`
-    CREATE TABLE identity.user (
+    CREATE TABLE identity.users (
         -- Primary key
         id Serial,
         PRIMARY KEY (id),
@@ -17,10 +17,10 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         time_removed Timestamp NULL
     );
 
-    CREATE UNIQUE INDEX user_provider_user_id_hash ON identity.user(provider_user_id_hash);
+    CREATE UNIQUE INDEX users_provider_user_id_hash ON identity.users(provider_user_id_hash);
 `);
 
 exports.down = (knex, Promise) => knex.schema.raw(`
-    DROP INDEX IF EXISTS identity.user_provider_user_id_hash;
-    DROP TABLE IF EXISTS identity.user;
+    DROP INDEX IF EXISTS identity.users_provider_user_id_hash;
+    DROP TABLE IF EXISTS identity.users;
 `);

@@ -68,9 +68,9 @@ export interface AppConfig {
  *     subpath in principle. It's meant to do it's own thing and be independent of whatever else
  *     there might be going on.
  * @note The router has the following paths exposed:
- *    @path /session POST, GET, DELETE
- *    @path /session/agree-to-cookie-policy POST
- *    @path /user POST, GET
+ *    @path /sessions POST, GET, DELETE
+ *    @path /sessions/agree-to-cookie-policy POST
+ *    @path /users POST, GET
  *    @path /users-info?ids GET
  * @param config - the application configuration.
  * @param auth0Client - a client for Auth0.
@@ -102,10 +102,10 @@ export function newIdentityRouter(
             config.logglySubdomain as string,
             config.rollbarToken as string));
     }
-    identityRouter.use(compression({threshold: 0}));
+    identityRouter.use(compression({ threshold: 0 }));
     identityRouter.use(newCommonApiServerMiddleware(config.clients));
 
-    identityRouter.post('/session', wrap(async (req: Request, res: express.Response) => {
+    identityRouter.post('/sessions', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
 
         try {
@@ -126,7 +126,7 @@ export function newIdentityRouter(
         }
     }));
 
-    identityRouter.get('/session', wrap(async (req: Request, res: express.Response) => {
+    identityRouter.get('/sessions', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
         if (currentSessionToken == null) {
             req.log.warn('Expected a session token to exist');
@@ -158,7 +158,7 @@ export function newIdentityRouter(
         }
     }));
 
-    identityRouter.delete('/session', wrap(async (req: Request, res: express.Response) => {
+    identityRouter.delete('/sessions', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
         if (currentSessionToken == null) {
             req.log.warn('Expected a session token to exist');
@@ -200,7 +200,7 @@ export function newIdentityRouter(
         }
     }));
 
-    identityRouter.post('/session/agree-to-cookie-policy', wrap(async (req: Request, res: express.Response) => {
+    identityRouter.post('/sessions/agree-to-cookie-policy', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
         if (currentSessionToken == null) {
             req.log.warn('Expected a session token to exist');
@@ -253,7 +253,7 @@ export function newIdentityRouter(
         }
     }));
 
-    identityRouter.post('/user', wrap(async (req: Request, res: express.Response) => {
+    identityRouter.post('/users', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
         if (currentSessionToken == null) {
             req.log.warn('Expected a session token to exist');
@@ -321,7 +321,7 @@ export function newIdentityRouter(
         }
     }));
 
-    identityRouter.get('/user', wrap(async (req: Request, res: express.Response) => {
+    identityRouter.get('/users', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
         if (currentSessionToken == null) {
             req.log.warn('Expected a session token to exist');

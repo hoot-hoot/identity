@@ -148,14 +148,14 @@ describe('IdentityRouter', () => {
         expect(identityRouter).is.not.null;
     });
 
-    describe('/session POST', () => {
+    describe('/sessions POST', () => {
         it('should return the newly created session when there is no session information', async () => {
             const appAgent = buildAppAgent();
 
             td.when(repository.getOrCreateSession(null, td.matchers.isA(Date))).thenReturn([theSessionToken, theSession, true]);
 
             await appAgent
-                .post('/session')
+                .post('/sessions')
                 .set('Origin', 'core')
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect(HttpStatus.CREATED)
@@ -172,7 +172,7 @@ describe('IdentityRouter', () => {
             td.when(repository.getOrCreateSession(null, td.matchers.isA(Date))).thenReturn([theSessionToken, theSession, true]);
 
             await appAgent
-                .post('/session')
+                .post('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, 'bad data here')
                 .set('Origin', 'core')
                 .expect(HttpStatus.CREATED)
@@ -197,7 +197,7 @@ describe('IdentityRouter', () => {
             td.when(repository.getOrCreateSession(theSessionToken, td.matchers.isA(Date))).thenReturn([theSessionToken, theSession, false]);
 
             await appAgent
-                .post('/session')
+                .post('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
                 .set('Origin', 'core')
                 .expect(HttpStatus.OK)
@@ -216,20 +216,20 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/session', 'post');
-        badRepository('/session', 'post', { getOrCreateSession: (_t: SessionToken | null, _c: Date) => { } }, new Map<string, [Error, number]>([
+        badOrigins('/sessions', 'post');
+        badRepository('/sessions', 'post', { getOrCreateSession: (_t: SessionToken | null, _c: Date) => { } }, new Map<string, [Error, number]>([
             ['INTERNAL_SERVER_ERROR when the repository errors', [new Error('An error occured'), HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
     });
 
-    describe('/session GET', () => {
+    describe('/sessions GET', () => {
         it('should return an existing session', async () => {
             const appAgent = buildAppAgent();
 
             td.when(repository.getSession(theSessionToken)).thenReturn(theSession);
 
             await appAgent
-                .get('/session')
+                .get('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
                 .set('Origin', 'core')
                 .expect(HttpStatus.OK)
@@ -247,22 +247,22 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/session', 'get');
-        badSessionToken('/session', 'get');
-        badRepository('/session', 'get', { getSession: (_t: SessionToken) => { } }, new Map<string, [Error, number]>([
+        badOrigins('/sessions', 'get');
+        badSessionToken('/sessions', 'get');
+        badRepository('/sessions', 'get', { getSession: (_t: SessionToken) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the session is not present', [new SessionNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['INTERNAL_SERVER_ERROR when the repository errors', [new Error('An error occurred'), HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
     });
 
-    describe('/session DELETE', () => {
+    describe('/sessions DELETE', () => {
         it('should succeed', async () => {
             const appAgent = buildAppAgent();
 
             td.when(repository.removeSession(theSessionToken, td.matchers.isA(Date), theSession.xsrfToken)).thenReturn();
 
             await appAgent
-                .delete('/session')
+                .delete('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSession.xsrfToken)
                 .set('Origin', 'core')
@@ -279,24 +279,24 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/session', 'delete');
-        badSessionToken('/session', 'delete');
-        badXsrfToken('/session', 'delete');
-        badRepository('/session', 'delete', { removeSession: (_t: SessionToken, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
+        badOrigins('/sessions', 'delete');
+        badSessionToken('/sessions', 'delete');
+        badXsrfToken('/sessions', 'delete');
+        badRepository('/sessions', 'delete', { removeSession: (_t: SessionToken, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the session is not present', [new SessionNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['BAD_REQUEST when the XSRF token is mismatched', [new XsrfTokenMismatchError('Invalid token'), HttpStatus.BAD_REQUEST]],
             ['INTERNAL_SERVER_ERROR when the repository errors', [new Error('An error occurred'), HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
     });
 
-    describe('/session/agree-to-cookie-policy POST', () => {
+    describe('/sessions/agree-to-cookie-policy POST', () => {
         it('should succeed', async () => {
             const appAgent = buildAppAgent();
 
             td.when(repository.agreeToCookiePolicyForSession(theSessionToken, td.matchers.isA(Date), theSession.xsrfToken)).thenReturn(theSessionWithAgreement);
 
             await appAgent
-                .post('/session/agree-to-cookie-policy')
+                .post('/sessions/agree-to-cookie-policy')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSession.xsrfToken)
                 .set('Origin', 'core')
@@ -315,10 +315,10 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/session/agree-to-cookie-policy', 'post');
-        badSessionToken('/session/agree-to-cookie-policy', 'post');
-        badXsrfToken('/session/agree-to-cookie-policy', 'post');
-        badRepository('/session/agree-to-cookie-policy', 'post', { agreeToCookiePolicyForSession: (_t: SessionToken, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
+        badOrigins('/sessions/agree-to-cookie-policy', 'post');
+        badSessionToken('/sessions/agree-to-cookie-policy', 'post');
+        badXsrfToken('/sessions/agree-to-cookie-policy', 'post');
+        badRepository('/sessions/agree-to-cookie-policy', 'post', { agreeToCookiePolicyForSession: (_t: SessionToken, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the session is not present', [new SessionNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['NOT_FOUND when the user is not present', [new UserNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['BAD_REQUEST when the XSRF token is mismatched', [new XsrfTokenMismatchError('Invalid token'), HttpStatus.BAD_REQUEST]],
@@ -326,7 +326,7 @@ describe('IdentityRouter', () => {
         ]));
     });
 
-    describe('/user POST', () => {
+    describe('/users POST', () => {
         it('should return a new user when there isn\'t one', async () => {
             const appAgent = buildAppAgent();
 
@@ -336,7 +336,7 @@ describe('IdentityRouter', () => {
                 .thenReturn([theSessionTokenWithUser, theSessionWithUser, true]);
 
             await appAgent
-                .post('/user')
+                .post('/users')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSessionWithUser.xsrfToken)
                 .set('Origin', 'core')
@@ -365,7 +365,7 @@ describe('IdentityRouter', () => {
                 .thenReturn([theSessionTokenWithUser, theSessionWithUser, false]);
 
             await appAgent
-                .post('/user')
+                .post('/users')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSessionWithUser.xsrfToken)
                 .set('Origin', 'core')
@@ -385,21 +385,21 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/user', 'post');
-        badSessionToken('/user', 'post');
-        badXsrfToken('/user', 'post');
-        badAuth0('/user', 'post', new Map<string, [string, number]>([
+        badOrigins('/users', 'post');
+        badSessionToken('/users', 'post');
+        badXsrfToken('/users', 'post');
+        badAuth0('/users', 'post', new Map<string, [string, number]>([
             ['UNAUTHORIZED when the token was not accepted', ['Unauthorized', HttpStatus.UNAUTHORIZED]],
             ['INTERNAL_SERVER_ERROR when the result could not be parsed', ['A bad response', HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
-        badRepository('/user', 'post', { getOrCreateUserOnSession: (_t: SessionToken, _a: Auth0Profile, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
+        badRepository('/users', 'post', { getOrCreateUserOnSession: (_t: SessionToken, _a: Auth0Profile, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the session is not present', [new SessionNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['BAD_REQUEST when the XSRF token is mismatched', [new XsrfTokenMismatchError('Invalid token'), HttpStatus.BAD_REQUEST]],
             ['INTERNAL_SERVER_ERROR when the repository errors', [new Error('An error occurred'), HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
     });
 
-    describe('/user GET', () => {
+    describe('/users GET', () => {
         it('should return an existing user', async () => {
             const appAgent = buildAppAgent();
 
@@ -409,7 +409,7 @@ describe('IdentityRouter', () => {
                 .thenReturn(theSessionWithUser);
 
             await appAgent
-                .get('/user')
+                .get('/users')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
                 .set('Origin', 'core')
                 .expect(HttpStatus.OK)
@@ -427,13 +427,13 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/user', 'get');
-        badSessionToken('/user', 'get');
-        badAuth0('/user', 'get', new Map<string, [string, number]>([
+        badOrigins('/users', 'get');
+        badSessionToken('/users', 'get');
+        badAuth0('/users', 'get', new Map<string, [string, number]>([
             ['UNAUTHORIZED when the token was not accepted', ['Unauthorized', HttpStatus.UNAUTHORIZED]],
             ['INTERNAL_SERVER_ERROR when the result could not be parsed', ['A bad response', HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
-        badRepository('/user', 'get', { getUserOnSession: (_t: SessionToken, _a: Auth0Profile, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
+        badRepository('/users', 'get', { getUserOnSession: (_t: SessionToken, _a: Auth0Profile, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the session is not present', [new SessionNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['NOT_FOUND when the user is not present', [new UserNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
             ['INTERNAL_SERVER_ERROR when the repository errors', [new Error('An error occurred'), HttpStatus.INTERNAL_SERVER_ERROR]]

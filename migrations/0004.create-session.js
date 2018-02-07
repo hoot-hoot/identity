@@ -1,5 +1,5 @@
 exports.up = (knex, Promise) => knex.schema.raw(`
-    CREATE TABLE identity.session (
+    CREATE TABLE identity.sessions (
         -- Primary key
         id Uuid,
         PRIMARY KEY (id),
@@ -8,7 +8,7 @@ exports.up = (knex, Promise) => knex.schema.raw(`
         xsrf_token Char(64) NOT NULL,
         agreed_to_cookie_policy Boolean NOT NULL,
         -- Foreign key
-        user_id Int NULL REFERENCES identity.user(id),
+        user_id Int NULL REFERENCES identity.users(id),
         -- Denormalized data
         time_created Timestamp NOT NULL,
         time_last_updated Timestamp NOT NULL,
@@ -17,5 +17,5 @@ exports.up = (knex, Promise) => knex.schema.raw(`
 `);
 
 exports.down = (knex, Promise) => knex.schema.raw(`
-    DROP TABLE IF EXISTS identity.session;
+    DROP TABLE IF EXISTS identity.sessions;
 `);
