@@ -7,6 +7,7 @@ import * as cookieParser from 'cookie-parser'
 import * as compression from 'compression'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
+import * as NodeCache from 'node-cache'
 import { ArrayOf, MarshalFrom } from 'raynor'
 import * as r from 'raynor'
 
@@ -74,12 +75,14 @@ export interface AppConfig {
  *    @path /users-info?ids GET
  * @param config - the application configuration.
  * @param auth0Client - a client for Auth0.
+ * @param auth0Cache - a cache which sits in front of Auth0.
  * @param repository - a repository.
  * @return An {@link express.Router} doing all of the above.
  */
 export function newIdentityRouter(
     config: AppConfig,
     auth0Client: auth0.AuthenticationClient,
+    auth0Cache: NodeCache,
     repository: Repository): express.Router {
     const sessionTokenMarshaller = new (MarshalFrom(SessionToken))();
     const xsrfTokenMarshaller = new XsrfTokenMarshaller();
@@ -270,19 +273,24 @@ export function newIdentityRouter(
             return;
         }
 
-        let auth0Profile: Auth0Profile | null = null;
+        let auth0Profile: Auth0Profile | undefined = undefined;
         try {
             const auth0AccessToken = currentSessionToken.userToken as string;
-            const auth0ProfileSerialized = await auth0Client.getProfile(auth0AccessToken);
+            auth0Profile = auth0Cache.get(auth0AccessToken);
 
-            if (auth0ProfileSerialized == 'Unauthorized') {
-                req.log.warn('Token was not accepted by Auth0');
-                res.status(HttpStatus.UNAUTHORIZED);
-                res.end();
-                return;
+            if (auth0Profile == undefined) {
+                const auth0ProfileSerialized = await auth0Client.getProfile(auth0AccessToken);
+
+                if (auth0ProfileSerialized == 'Unauthorized') {
+                    req.log.warn('Token was not accepted by Auth0');
+                    res.status(HttpStatus.UNAUTHORIZED);
+                    res.end();
+                    return;
+                }
+
+                auth0Profile = auth0ProfileMarshaller.extract(auth0ProfileSerialized);
+                auth0Cache.set(auth0AccessToken, auth0Profile);
             }
-
-            auth0Profile = auth0ProfileMarshaller.extract(auth0ProfileSerialized);
         } catch (e) {
             req.log.error(e, 'Auth0 Error');
             req.errorLog.error(e);
@@ -330,19 +338,24 @@ export function newIdentityRouter(
             return;
         }
 
-        let auth0Profile: Auth0Profile | null = null;
+        let auth0Profile: Auth0Profile | undefined = undefined;
         try {
             const auth0AccessToken = currentSessionToken.userToken as string;
-            const auth0ProfileSerialized = await auth0Client.getProfile(auth0AccessToken);
+            auth0Profile = auth0Cache.get(auth0AccessToken);
 
-            if (auth0ProfileSerialized == 'Unauthorized') {
-                req.log.warn('Token was not accepted by Auth0');
-                res.status(HttpStatus.UNAUTHORIZED);
-                res.end();
-                return;
+            if (auth0Profile == undefined) {
+                const auth0ProfileSerialized = await auth0Client.getProfile(auth0AccessToken);
+
+                if (auth0ProfileSerialized == 'Unauthorized') {
+                    req.log.warn('Token was not accepted by Auth0');
+                    res.status(HttpStatus.UNAUTHORIZED);
+                    res.end();
+                    return;
+                }
+
+                auth0Profile = auth0ProfileMarshaller.extract(auth0ProfileSerialized);
+                auth0Cache.set(auth0AccessToken, auth0Profile);
             }
-
-            auth0Profile = auth0ProfileMarshaller.extract(auth0ProfileSerialized);
         } catch (e) {
             req.log.error(e, 'Auth0 Error');
             req.errorLog.error(e);

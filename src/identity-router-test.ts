@@ -3,6 +3,7 @@ import { expect } from 'chai'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
 import 'mocha'
+import * as NodeCache from 'node-cache'
 import { MarshalFrom } from 'raynor'
 import * as td from 'testdouble'
 import { agent, Test } from 'supertest'
@@ -122,6 +123,11 @@ describe('IdentityRouter', () => {
         getProfile: (_t: string) => { }
     });
 
+    const auth0Cache = td.object({
+        get: (_k: string) => { },
+        set: (_k: string, _v: any) => { }
+    });
+
     const repository = td.object({
         getOrCreateSession: (_t: SessionToken | null, _c: Date) => { },
         getSession: (_t: SessionToken) => { },
@@ -137,13 +143,13 @@ describe('IdentityRouter', () => {
     });
 
     it('can be constructed', () => {
-        const identityRouter = newIdentityRouter(localAppConfig, auth0Client as auth0.AuthenticationClient, repository as Repository);
+        const identityRouter = newIdentityRouter(localAppConfig, auth0Client as auth0.AuthenticationClient, auth0Cache as NodeCache, repository as Repository);
 
         expect(identityRouter).is.not.null;
     });
 
     it('can be constructed with prod settings', () => {
-        const identityRouter = newIdentityRouter(stagingAppConfig, auth0Client as auth0.AuthenticationClient, repository as Repository);
+        const identityRouter = newIdentityRouter(stagingAppConfig, auth0Client as auth0.AuthenticationClient, auth0Cache as NodeCache, repository as Repository);
 
         expect(identityRouter).is.not.null;
     });
@@ -522,7 +528,7 @@ describe('IdentityRouter', () => {
     });
 
     function buildAppAgent() {
-        const router = newIdentityRouter(localAppConfig, auth0Client as auth0.AuthenticationClient, repository as Repository);
+        const router = newIdentityRouter(localAppConfig, auth0Client as auth0.AuthenticationClient, auth0Cache as NodeCache, repository as Repository);
         const app = express();
         app.disable('x-powered-by');
         app.use('/', router);
@@ -696,7 +702,7 @@ describe('IdentityRouter', () => {
             it(`should return ${oneCase}`, async () => {
                 const repository = td.object(repositoryTemplate);
 
-                const router = newIdentityRouter(localAppConfig, auth0Client as auth0.AuthenticationClient, repository as Repository);
+                const router = newIdentityRouter(localAppConfig, auth0Client as auth0.AuthenticationClient, auth0Cache as NodeCache, repository as Repository);
                 const app = express();
                 app.disable('x-powered-by');
                 app.use('/', router);

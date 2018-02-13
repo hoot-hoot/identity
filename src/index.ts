@@ -2,6 +2,7 @@ import * as auth0 from 'auth0'
 import * as express from 'express'
 import * as knex from 'knex'
 import 'log-timestamp'
+import * as NodeCache from 'node-cache'
 
 import * as config from './config'
 import { newIdentityRouter } from './identity-router'
@@ -12,6 +13,10 @@ async function main() {
     const auth0Client = new auth0.AuthenticationClient({
         clientId: config.AUTH0_SERVER_CONFIG.clientId,
         domain: config.AUTH0_SERVER_CONFIG.domain
+    });
+    const auth0Cache = new NodeCache({
+        stdTTL: config.AUTH0_CACHE_TTL_IN_SECS,
+        useClones: false
     });
     const conn = knex({
         client: 'pg',
@@ -26,7 +31,7 @@ async function main() {
         logglyToken: config.LOGGLY_TOKEN,
         logglySubdomain: config.LOGGLY_SUBDOMAIN,
         rollbarToken: config.ROLLBAR_TOKEN
-    }, auth0Client, repository);
+    }, auth0Client, auth0Cache, repository);
 
     console.log('Starting up');
 

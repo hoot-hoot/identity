@@ -21,6 +21,7 @@ export const AUTH0_SERVER_CONFIG: Auth0ServerConfig = {
     domain: getFromEnv('AUTH0_DOMAIN'),
     loginCallbackUri: '' // Not used here
 };
+export const AUTH0_CACHE_TTL_IN_SECS: number = 10 * 60; // 10 minutes
 
 export let LOGGLY_TOKEN: string | null;
 export let LOGGLY_SUBDOMAIN: string | null;
