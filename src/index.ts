@@ -22,7 +22,7 @@ async function main() {
         client: 'pg',
         connection: config.DATABASE_URL
     });
-    const repository = new Repository(conn);
+    const repository = new Repository(config.ENV, conn);
     const identityRouter = newIdentityRouter({
         env: config.ENV,
         name: config.NAME,

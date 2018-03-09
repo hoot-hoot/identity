@@ -7,6 +7,7 @@ import * as uuid from 'uuid'
 
 import { randomBytes } from 'crypto'
 
+import { Env, isOnServer } from '@truesparrow/common-js'
 import { startupMigration } from '@truesparrow/common-server-js'
 import {
     Role,
@@ -100,14 +101,17 @@ export class Repository {
         'identity.users.time_removed as user_time_removed'
     ];
 
+    private readonly _env: Env;
     private readonly _conn: knex;
     private readonly _auth0ProfileMarshaller: Marshaller<Auth0Profile>;
 
     /**
      * Construct a repository.
+     * @param env - the environment in which the repository operates.
      * @param conn - An open connection to the database.
      */
-    constructor(conn: knex) {
+    constructor(env: Env, conn: knex) {
+        this._env = env;
         this._conn = conn;
         this._auth0ProfileMarshaller = new (MarshalFrom(Auth0Profile))();
 
@@ -560,6 +564,22 @@ export class Repository {
 
 
         return dbUsers.map((dbU: any) => this._dbUserToPublicUser(dbU));
+    }
+
+    /**
+     * Remove all the data in the database.
+     * @note This method only works in a {@link Env.Local} or {@link Env.Test} environment. It will
+     * throw a {@link Error} in any other context.
+     */
+    async testClearOut(): Promise<void> {
+        if (isOnServer(this._env)) {
+            throw new Error('Test method cannot be called in a production context');
+        }
+
+        await this._conn('identity.session_events').delete();
+        await this._conn('identity.sessions').delete();
+        await this._conn('identity.user_events').delete();
+        await this._conn('identity.users').delete();
     }
 
     static _dbSessionToSession(dbSession: any, dbUser: any | null = null, auth0Profile: Auth0Profile | null = null): Session {
