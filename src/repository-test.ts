@@ -104,7 +104,7 @@ describe('Repository', () => {
 
     before('run initialization once', async () => {
         const theConn = conn as knex;
-        const repository = new Repository(config.ENV, theConn);
+        const repository = new Repository(theConn);
         await repository.init();
     });
 
@@ -114,19 +114,19 @@ describe('Repository', () => {
 
     afterEach('clear out database', async () => {
         const theConn = conn as knex;
-        const repository = new Repository(config.ENV, theConn);
+        const repository = new Repository(theConn);
         await repository.testClearOut();
     });
 
     it('can be created', () => {
-        const repository = new Repository(config.ENV, conn as knex);
+        const repository = new Repository(conn as knex);
         expect(repository).is.not.null;
     });
 
     describe('getOrCreateSession', () => {
         it('should create a new token when there Ian\'t one', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session, created] = await repository.getOrCreateSession(null, rightNow);
 
             // Look at the return values
@@ -167,7 +167,7 @@ describe('Repository', () => {
 
         it('should reuse an already existing token', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session, created] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken, newSession, newCreated] = await repository.getOrCreateSession(sessionToken, rightLater);
 
@@ -190,7 +190,7 @@ describe('Repository', () => {
 
         it('should create a new session when the one it is supplied does not exist', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session, created] = await repository.getOrCreateSession(null, rightNow);
             const badSessionToken = new SessionToken(uuid());
             const [newSessionToken, newSession, newCreated] = await repository.getOrCreateSession(badSessionToken, rightLater);
@@ -215,7 +215,7 @@ describe('Repository', () => {
 
         it('should create a new session when the one it is supplied has been removed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionToken, session, created] = await repository.getOrCreateSession(null, rightNow);
             await repository.removeSession(sessionToken, rightNow, session.xsrfToken);
@@ -242,7 +242,7 @@ describe('Repository', () => {
     describe('getSession', () => {
         it('should return an existing session', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const retrievedSession = await repository.getSession(sessionToken);
 
@@ -252,7 +252,7 @@ describe('Repository', () => {
 
         it('should differentiate between two sessions', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken1, session1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionToken2, session2] = await repository.getOrCreateSession(null, rightNow);
 
@@ -266,7 +266,7 @@ describe('Repository', () => {
 
         it('should throw when the session is missing', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const badSessionToken = new SessionToken(uuid());
             try {
                 await repository.getSession(badSessionToken);
@@ -278,7 +278,7 @@ describe('Repository', () => {
 
         it('should throw when the session has been removed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             await repository.removeSession(sessionToken, rightNow, session.xsrfToken);
             try {
@@ -293,7 +293,7 @@ describe('Repository', () => {
     describe('removeSession', () => {
         it('should archive an existing session', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             await repository.removeSession(sessionToken, rightLater, session.xsrfToken);
 
@@ -336,7 +336,7 @@ describe('Repository', () => {
 
         it('should throw when the session is missing', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const badSessionToken = new SessionToken(uuid());
             try {
                 await repository.removeSession(badSessionToken, rightNow, 'A BAD TOKEN');
@@ -348,7 +348,7 @@ describe('Repository', () => {
 
         it('should throw when the session has been removed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             await repository.removeSession(sessionToken, rightLater, session.xsrfToken);
             try {
@@ -361,7 +361,7 @@ describe('Repository', () => {
 
         it('should throw when the XSRF token is bad', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken] = await repository.getOrCreateSession(null, rightNow);
             try {
                 await repository.removeSession(sessionToken, rightLater, 'A BAD TOKEN');
@@ -375,7 +375,7 @@ describe('Repository', () => {
     describe('agreeToCookiePolicyForSession', () => {
         it('should change the session agreement to true', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const newSession = await repository.agreeToCookiePolicyForSession(sessionToken, rightLater, session.xsrfToken);
 
@@ -423,7 +423,7 @@ describe('Repository', () => {
 
         it('should throw when the session is missing', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const badSessionToken = new SessionToken(uuid());
             try {
                 await repository.agreeToCookiePolicyForSession(badSessionToken, rightNow, 'A BAD TOKEN');
@@ -435,7 +435,7 @@ describe('Repository', () => {
 
         it('should throw when the session is inactive', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             await repository.removeSession(sessionToken, rightNow, session.xsrfToken);
             try {
@@ -448,7 +448,7 @@ describe('Repository', () => {
 
         it('should throw when the XSRF token is bad', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken] = await repository.getOrCreateSession(null, rightNow);
             try {
                 await repository.agreeToCookiePolicyForSession(sessionToken, rightLater, 'A BAD TOKEN');
@@ -460,7 +460,7 @@ describe('Repository', () => {
 
         it('should change the user session agreement to true', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightLater, session.xsrfToken);
             await repository.agreeToCookiePolicyForSession(sessionToken, rightEvenLater, session.xsrfToken);
@@ -471,7 +471,7 @@ describe('Repository', () => {
 
         it('should throw when the user cannot be found', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken, newSession] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightLater, session.xsrfToken);
 
@@ -489,7 +489,7 @@ describe('Repository', () => {
     describe('getOrCreateUserOnSession', () => {
         it('should create a new user', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken, newSession, newCreated] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightLater, session.xsrfToken);
 
@@ -564,7 +564,7 @@ describe('Repository', () => {
 
         it('should throw when the session is missing', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const badSessionToken = new SessionToken(uuid());
 
             try {
@@ -577,7 +577,7 @@ describe('Repository', () => {
 
         it('should throw when the session has been removed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             await repository.removeSession(sessionToken, rightLater, session.xsrfToken);
 
@@ -591,7 +591,7 @@ describe('Repository', () => {
 
         it('should throw when the XSRF token is bad', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken] = await repository.getOrCreateSession(null, rightNow);
 
             try {
@@ -604,7 +604,7 @@ describe('Repository', () => {
 
         it('should throw when the session is already associated with a user', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn1, sessionJohn1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionTokenJohn2, sessionJohn2] = await repository.getOrCreateUserOnSession(sessionTokenJohn1, auth0ProfileJohnDoe, rightLater, sessionJohn1.xsrfToken);
@@ -629,7 +629,7 @@ describe('Repository', () => {
 
         it('should recreate a user which already exists with new info', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken, newSession] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightLater, session.xsrfToken);
             const [lastSessionToken, lastSession, lastCreated] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnnyDoe, rightEvenLater, session.xsrfToken);
@@ -675,7 +675,7 @@ describe('Repository', () => {
 
         it('should agree to the cookie policy if creating and the session had agreed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             await repository.agreeToCookiePolicyForSession(sessionToken, rightNow, session.xsrfToken);
             const [newSessionToken, newSession] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightEvenLater, session.xsrfToken);
@@ -700,7 +700,7 @@ describe('Repository', () => {
 
         it('should agree to the cookie policy if recreating and the session had agreed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken, newSession] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightLater, session.xsrfToken);
             await repository.agreeToCookiePolicyForSession(sessionToken, rightEvenLater, session.xsrfToken);
@@ -735,7 +735,7 @@ describe('Repository', () => {
 
         it('should associate another session with the same user if the userId matches', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken1, session1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionToken2, session2] = await repository.getOrCreateSession(null, rightLater);
 
@@ -779,7 +779,7 @@ describe('Repository', () => {
 
         it('should not make the session agree to the cookie policy if the user had agreed previously', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken1, session1] = await repository.getOrCreateSession(null, rightNow);
             const [newSessionToken1] = await repository.getOrCreateUserOnSession(sessionToken1, auth0ProfileJohnDoe, rightLater, session1.xsrfToken);
             await repository.agreeToCookiePolicyForSession(sessionToken1, rightLater, session1.xsrfToken);
@@ -834,7 +834,7 @@ describe('Repository', () => {
     describe('getUserOnSession', () => {
         it('should return an existing user', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken1, session1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionToken2, session2] = await repository.getOrCreateUserOnSession(sessionToken1, auth0ProfileJohnDoe, rightLater, session1.xsrfToken);
 
@@ -845,7 +845,7 @@ describe('Repository', () => {
 
         it('should return an existing user and integrate new name', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionToken1, session1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionToken2, session2] = await repository.getOrCreateUserOnSession(sessionToken1, auth0ProfileJohnDoe, rightLater, session1.xsrfToken);
 
@@ -867,7 +867,7 @@ describe('Repository', () => {
 
         it('should differentiate between two users', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn1, sessionJohn1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionTokenJohn2, sessionJohn2] = await repository.getOrCreateUserOnSession(sessionTokenJohn1, auth0ProfileJohnDoe, rightLater, sessionJohn1.xsrfToken);
@@ -883,7 +883,7 @@ describe('Repository', () => {
 
         it('should throw when the user is missing', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const badSessionToken = new SessionToken(uuid());
 
@@ -897,7 +897,7 @@ describe('Repository', () => {
 
         it('should throw when the user has been removed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
             const [sessionTokenJohn1, sessionJohn1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionTokenJohn2, sessionJohn2] = await repository.getOrCreateUserOnSession(sessionTokenJohn1, auth0ProfileJohnDoe, rightLater, sessionJohn1.xsrfToken);
 
@@ -914,7 +914,7 @@ describe('Repository', () => {
 
         it('should throw when the session is missing', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn1, sessionJohn1] = await repository.getOrCreateSession(null, rightNow);
             await repository.getOrCreateUserOnSession(sessionTokenJohn1, auth0ProfileJohnDoe, rightLater, sessionJohn1.xsrfToken);
@@ -931,7 +931,7 @@ describe('Repository', () => {
 
         it('should throw when the session has been removed', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn1, sessionJohn1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionTokenJohn2] = await repository.getOrCreateUserOnSession(sessionTokenJohn1, auth0ProfileJohnDoe, rightLater, sessionJohn1.xsrfToken);
@@ -948,7 +948,7 @@ describe('Repository', () => {
 
         it('should throw when the session is not marked as linked', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn1, sessionJohn1] = await repository.getOrCreateSession(null, rightNow);
             const [sessionTokenJohn2] = await repository.getOrCreateUserOnSession(sessionTokenJohn1, auth0ProfileJohnDoe, rightLater, sessionJohn1.xsrfToken);
@@ -966,7 +966,7 @@ describe('Repository', () => {
 
         it('should throw when the session is not linked with the user', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn, sessionJohn] = await repository.getOrCreateSession(null, rightNow);
             await repository.getOrCreateUserOnSession(sessionTokenJohn, auth0ProfileJohnDoe, rightLater, sessionJohn.xsrfToken);
@@ -985,7 +985,7 @@ describe('Repository', () => {
     describe('getUsersInfo', () => {
         it('should return one user', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionToken, session] = await repository.getOrCreateSession(null, rightNow);
             const [, newSession] = await repository.getOrCreateUserOnSession(sessionToken, auth0ProfileJohnDoe, rightLater, session.xsrfToken);
@@ -1006,7 +1006,7 @@ describe('Repository', () => {
 
         it('should return two users', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn, sessionJohn] = await repository.getOrCreateSession(null, rightNow);
             const [, newSessionJohn] = await repository.getOrCreateUserOnSession(sessionTokenJohn, auth0ProfileJohnDoe, rightLater, sessionJohn.xsrfToken);
@@ -1039,7 +1039,7 @@ describe('Repository', () => {
 
         it('should skip over an inactive user', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn, sessionJohn] = await repository.getOrCreateSession(null, rightNow);
             const [, newSessionJohn] = await repository.getOrCreateUserOnSession(sessionTokenJohn, auth0ProfileJohnDoe, rightLater, sessionJohn.xsrfToken);
@@ -1065,7 +1065,7 @@ describe('Repository', () => {
 
         it('should throw when there are no users to retrieve', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             try {
                 await repository.getUsersInfo([]);
@@ -1077,7 +1077,7 @@ describe('Repository', () => {
 
         it('should throw when there are too many users to retrieve', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             try {
                 await repository.getUsersInfo([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]);
@@ -1089,7 +1089,7 @@ describe('Repository', () => {
 
         it('should throw when not enough users are retrieved', async () => {
             const theConn = conn as knex;
-            const repository = new Repository(config.ENV, theConn);
+            const repository = new Repository(theConn);
 
             const [sessionTokenJohn, sessionJohn] = await repository.getOrCreateSession(null, rightNow);
             const [, newSessionJohn] = await repository.getOrCreateUserOnSession(sessionTokenJohn, auth0ProfileJohnDoe, rightLater, sessionJohn.xsrfToken);

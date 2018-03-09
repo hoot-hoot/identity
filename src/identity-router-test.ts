@@ -18,8 +18,9 @@ import { SessionAndTokenResponse, SessionResponse, UsersInfoResponse } from '@tr
 import { PrivateUser, PublicUser, Role, Session, SessionState, UserState } from '@truesparrow/identity-sdk-js/entities'
 import { SessionToken } from '@truesparrow/identity-sdk-js/session-token'
 
+import { AppConfig } from './app-config'
 import { Auth0Profile } from './auth0-profile'
-import { AppConfig, newIdentityRouter } from './identity-router'
+import { newIdentityRouter } from './identity-router'
 import {
     Repository,
     SessionNotFoundError,

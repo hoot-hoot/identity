@@ -7,7 +7,7 @@ import * as uuid from 'uuid'
 
 import { randomBytes } from 'crypto'
 
-import { Env, isOnServer } from '@truesparrow/common-js'
+import { devOnly } from '@truesparrow/common-js'
 import { startupMigration } from '@truesparrow/common-server-js'
 import {
     Role,
@@ -24,6 +24,7 @@ import {
 import { SessionToken } from '@truesparrow/identity-sdk-js/session-token'
 
 import { Auth0Profile } from './auth0-profile'
+import * as config from './config'
 
 
 /** The base class of errors raised by the {@link Repository} and a generic error itself. */
@@ -36,6 +37,7 @@ export class RepositoryError extends Error {
 
 
 /** Error raised when a session could not be found. */
+
 export class SessionNotFoundError extends RepositoryError {
     constructor(message: string) {
         super(message);
@@ -101,7 +103,6 @@ export class Repository {
         'identity.users.time_removed as user_time_removed'
     ];
 
-    private readonly _env: Env;
     private readonly _conn: knex;
     private readonly _auth0ProfileMarshaller: Marshaller<Auth0Profile>;
 
@@ -110,8 +111,7 @@ export class Repository {
      * @param env - the environment in which the repository operates.
      * @param conn - An open connection to the database.
      */
-    constructor(env: Env, conn: knex) {
-        this._env = env;
+    constructor(conn: knex) {
         this._conn = conn;
         this._auth0ProfileMarshaller = new (MarshalFrom(Auth0Profile))();
 
@@ -568,14 +568,10 @@ export class Repository {
 
     /**
      * Remove all the data in the database.
-     * @note This method only works in a {@link Env.Local} or {@link Env.Test} environment. It will
-     * throw a {@link Error} in any other context.
+     * @note This method only works in a dev context.
      */
+    @devOnly(config.ENV)
     async testClearOut(): Promise<void> {
-        if (isOnServer(this._env)) {
-            throw new Error('Test method cannot be called in a production context');
-        }
-
         await this._conn('identity.session_events').delete();
         await this._conn('identity.sessions').delete();
         await this._conn('identity.user_events').delete();

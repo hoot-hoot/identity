@@ -4,9 +4,12 @@ import * as knex from 'knex'
 import 'log-timestamp'
 import * as NodeCache from 'node-cache'
 
+import { isForDevelopment } from '@truesparrow/common-js'
+
 import * as config from './config'
 import { newIdentityRouter } from './identity-router'
 import { Repository } from './repository'
+import { newTestRouter } from './test-router'
 
 
 async function main() {
@@ -22,8 +25,7 @@ async function main() {
         client: 'pg',
         connection: config.DATABASE_URL
     });
-    const repository = new Repository(config.ENV, conn);
-    const identityRouter = newIdentityRouter({
+    const appConfig = {
         env: config.ENV,
         name: config.NAME,
         clients: config.CLIENTS,
@@ -31,7 +33,10 @@ async function main() {
         logglyToken: config.LOGGLY_TOKEN,
         logglySubdomain: config.LOGGLY_SUBDOMAIN,
         rollbarToken: config.ROLLBAR_TOKEN
-    }, auth0Client, auth0Cache, repository);
+    };
+    const repository = new Repository(conn);
+    const identityRouter = newIdentityRouter(appConfig, auth0Client, auth0Cache, repository);
+    const testRouter = newTestRouter(appConfig, repository);
 
     console.log('Starting up');
 
@@ -39,9 +44,13 @@ async function main() {
     await repository.init();
 
     console.log('Starting web server');
+
     const app = express();
     app.disable('x-powered-by');
     app.use('/api', identityRouter);
+    if (isForDevelopment(config.ENV)) {
+        app.use('/test', testRouter);
+    }
     app.listen(config.PORT, config.ADDRESS, () => {
         console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
     });

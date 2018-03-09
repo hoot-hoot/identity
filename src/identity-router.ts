@@ -11,7 +11,7 @@ import * as NodeCache from 'node-cache'
 import { ArrayOf, MarshalFrom } from 'raynor'
 import * as r from 'raynor'
 
-import { Env, isLocal } from '@truesparrow/common-js'
+import { isLocal } from '@truesparrow/common-js'
 import {
     newCommonApiServerMiddleware,
     newCommonServerMiddleware,
@@ -32,33 +32,9 @@ import {
     SessionToken
 } from '@truesparrow/identity-sdk-js/session-token'
 
+import { AppConfig } from './app-config'
 import { Auth0Profile } from './auth0-profile'
 import { Repository } from './repository'
-
-
-/** Application level configuration needed in building the identity router. */
-export interface AppConfig {
-    /** The current {@link Env}. */
-    env: Env;
-    /** A unique name for this service. */
-    name: string;
-    /**
-     * The set of allowed hostnames which can be clients. Will be matched against the Origin header
-     * of incoming requests.
-     */
-    clients: string[];
-    /**
-     * Disable all logging. Used for tests. Otherwise logs output to the console in {@link Env.Local}
-     * and {@link Env.Test} and to loggly in {@link Env.Staging} or {@link Env.Prod}
-     */
-    forceDisableLogging: boolean;
-    /** The secret token for the Loggly logging service. */
-    logglyToken: string | null;
-    /** The subdomain for the Loggly logging service. */
-    logglySubdomain: string | null;
-    /** The secret token for the Rollbar error reporting service. */
-    rollbarToken: string | null;
-}
 
 
 /**
