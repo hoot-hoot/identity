@@ -578,6 +578,31 @@ export class Repository {
         await this._conn('identity.users').delete();
     }
 
+    /**
+     * Create a user for testing purposes.
+     * @note This method only works in a dev context.
+     * @note The XSRSF check is skipped.
+     * @note Much like {@link getOrCreateUserOnSession} this is an idempotent method.
+     * @param sessionToken - the session for which the user will be created.
+     * @param auth0Profile  - information from Auth0 about the user. This is usually
+     *    application provided.
+     * @param requestTime - the time at which the request was issued to the identity service.
+     * @return A triple of {@link SessionToken} and a {@link Session} with a {@link User}, and a
+     *    boolean indicating whether the thing was created or just updated.
+     * @throws If the session token doesn't identify an existing active session, this will raise
+     *     a {@link SessionNotFoundError}.
+     * @throws If the session exists, but is attached to another user, this will raise
+     *     a {@link SessionNotFoundError}.
+     */
+    @devOnly(config.ENV)
+    async testCreateUser(
+        sessionToken: SessionToken,
+        auth0Profile: Auth0Profile,
+        requestTime: Date): Promise<[SessionToken, Session, boolean]> {
+        const session = await this.getSession(sessionToken);
+        return await this.getOrCreateUserOnSession(sessionToken, auth0Profile, requestTime, session.xsrfToken);
+    }
+
     static _dbSessionToSession(dbSession: any, dbUser: any | null = null, auth0Profile: Auth0Profile | null = null): Session {
         const session = new Session();
         session.state = dbSession['session_state'];

@@ -18,32 +18,22 @@ import {
     newLocalCommonServerMiddleware,
     Request
 } from '@truesparrow/common-server-js'
-import { XsrfTokenMarshaller } from '@truesparrow/identity-sdk-js/entities'
-import {
-    SESSION_TOKEN_HEADER_NAME,
-    XSRF_TOKEN_HEADER_NAME
-} from '@truesparrow/identity-sdk-js/client'
 import {
     SessionAndTokenResponse,
     SessionResponse,
     UsersInfoResponse
 } from '@truesparrow/identity-sdk-js/dtos'
-import {
-    SessionToken
-} from '@truesparrow/identity-sdk-js/session-token'
 
 import { AppConfig } from './app-config'
 import { Auth0Profile } from './auth0-profile'
 import { Repository } from './repository'
+import { extractSessionToken, extractXsrfToken } from './utils'
 
 
 /**
  * Construct an IdentityRouter. This is an full formed and independent {@link express.Router}
  * which implements the HTTP API for the identity service. It makes the connection between clients,
  * external services and the business logic encapsulated in the {@link Repository}.
- * @note This is meant to be mounted by an express application at the root, but can work at any
- *     subpath in principle. It's meant to do it's own thing and be independent of whatever else
- *     there might be going on.
  * @note The router has the following paths exposed:
  *    @path /sessions POST, GET, DELETE
  *    @path /sessions/agree-to-cookie-policy POST
@@ -53,15 +43,13 @@ import { Repository } from './repository'
  * @param auth0Client - a client for Auth0.
  * @param auth0Cache - a cache which sits in front of Auth0.
  * @param repository - a repository.
- * @return An {@link express.Router} doing all of the above.
+ * @return A {@link express.Router} doing all of the above.
  */
 export function newIdentityRouter(
     config: AppConfig,
     auth0Client: auth0.AuthenticationClient,
     auth0Cache: NodeCache,
     repository: Repository): express.Router {
-    const sessionTokenMarshaller = new (MarshalFrom(SessionToken))();
-    const xsrfTokenMarshaller = new XsrfTokenMarshaller();
     const auth0ProfileMarshaller = new (MarshalFrom(Auth0Profile))();
     const sessionAndTokenResponseMarshaller = new (MarshalFrom(SessionAndTokenResponse))();
     const sessionResponseMarshaller = new (MarshalFrom(SessionResponse))();
@@ -430,31 +418,6 @@ export function newIdentityRouter(
             res.end();
         }
     }));
-
-    function extractSessionToken(req: Request): SessionToken | null {
-        let sessionTokenSerialized: string | null = null;
-
-        if (req.header(SESSION_TOKEN_HEADER_NAME) != undefined) {
-            sessionTokenSerialized = req.header(SESSION_TOKEN_HEADER_NAME) as string;
-        } else {
-            return null;
-        }
-
-        try {
-            return sessionTokenMarshaller.extract(JSON.parse(sessionTokenSerialized as string));
-        } catch (e) {
-            return null;
-        }
-    }
-
-    function extractXsrfToken(req: Request): string | null {
-        try {
-            const xsrfTokenRaw = req.header(XSRF_TOKEN_HEADER_NAME);
-            return xsrfTokenMarshaller.extract(xsrfTokenRaw);
-        } catch (e) {
-            return null;
-        }
-    }
 
     return identityRouter;
 }
