@@ -17,7 +17,7 @@ export class Auth0Profile {
     name: string;
 
     /** An https Uri for a picture of the user */
-    @MarshalWith(r.SecureWebUriMarshaller)
+    @MarshalWith(r.WebUriMarshaller)
     picture: string;
 
     /** A unique user identifier */

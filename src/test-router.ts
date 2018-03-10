@@ -5,6 +5,7 @@ import { wrap } from 'async-middleware'
 import * as compression from 'compression'
 import * as express from 'express'
 import * as HttpStatus from 'http-status-codes'
+import * as NodeCache from 'node-cache'
 import { MarshalFrom } from 'raynor'
 
 import {
@@ -29,11 +30,14 @@ import { Auth0Profile } from './auth0-profile';
  * @note The router has the following paths exposed:
  *     @path /clear-out POST
  *     @path /create-test-user POST
+ * @note For all users methods in here create or work with, the auth0Cache is modified and updated
+ *    with correct information. This ensures Auth0 won't ever be hit during any other API call.
  * @param config - the application configuration.
+ * @param auth0Cache - a cache which sits in front of Auth0.
  * @param repository - a repository.
  * @return A {link express.Router} doing the above.
  */
-export function newTestRouter(config: AppConfig, repository: Repository): express.Router {
+export function newTestRouter(config: AppConfig, auth0Cache: NodeCache, repository: Repository): express.Router {
     const auth0ProfileMarshaller = new (MarshalFrom(Auth0Profile))();
     const sessionAndTokenResponseMarshaller = new (MarshalFrom(SessionAndTokenResponse))();
 
@@ -79,6 +83,7 @@ export function newTestRouter(config: AppConfig, repository: Repository): expres
 
         try {
             const [sessionToken, session, created] = await repository.testCreateUser(currentSessionToken, auth0Profile, req.requestTime);
+            auth0Cache.set(currentSessionToken.userToken as string, auth0Profile);
 
             const sessionTokenAndSessionResponse = new SessionAndTokenResponse();
             sessionTokenAndSessionResponse.sessionToken = sessionToken;

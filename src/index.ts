@@ -36,7 +36,7 @@ async function main() {
     };
     const repository = new Repository(conn);
     const identityRouter = newIdentityRouter(appConfig, auth0Client, auth0Cache, repository);
-    const testRouter = newTestRouter(appConfig, repository);
+    const testRouter = newTestRouter(appConfig, auth0Cache, repository);
 
     console.log('Starting up');
 
