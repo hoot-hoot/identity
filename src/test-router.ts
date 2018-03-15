@@ -19,7 +19,6 @@ import {
 
 import { AppConfig } from './app-config'
 import { Repository } from './repository'
-import { extractSessionToken } from './utils'
 import { Auth0Profile } from './auth0-profile';
 
 
@@ -62,14 +61,6 @@ export function newTestRouter(config: AppConfig, auth0Cache: NodeCache, reposito
     }));
 
     testRouter.post('/create-test-user', wrap(async (req: Request, res: express.Response) => {
-        const currentSessionToken = extractSessionToken(req);
-        if (currentSessionToken == null) {
-            req.log.warn('Expected a session token to exist');
-            res.status(HttpStatus.BAD_REQUEST);
-            res.end();
-            return;
-        }
-
         let auth0Profile: Auth0Profile | null = null;
         try {
             auth0Profile = auth0ProfileMarshaller.extract(req.body);
@@ -82,8 +73,8 @@ export function newTestRouter(config: AppConfig, auth0Cache: NodeCache, reposito
         }
 
         try {
-            const [sessionToken, session, created] = await repository.testCreateUser(currentSessionToken, auth0Profile, req.requestTime);
-            auth0Cache.set(currentSessionToken.userToken as string, auth0Profile);
+            const [sessionToken, session, created] = await repository.testCreateUser(auth0Profile, req.requestTime);
+            auth0Cache.set(sessionToken.userToken as string, auth0Profile);
 
             const sessionTokenAndSessionResponse = new SessionAndTokenResponse();
             sessionTokenAndSessionResponse.sessionToken = sessionToken;
