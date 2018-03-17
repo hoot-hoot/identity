@@ -1,10 +1,6 @@
-import { config } from 'dotenv'
-
 import { Env, parseEnv, isOnServer } from '@truesparrow/common-js'
 import { getFromEnv } from '@truesparrow/common-server-js'
 import { Auth0ServerConfig } from '@truesparrow/identity-sdk-js'
-
-config();
 
 export const NAME: string = 'identity';
 export const ENV: Env = parseEnv(getFromEnv('ENV'));

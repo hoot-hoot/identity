@@ -51,6 +51,7 @@ async function main() {
     if (isForDevelopment(config.ENV)) {
         app.use('/test', testRouter);
     }
+
     app.listen(config.PORT, config.ADDRESS, () => {
         console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
     });
