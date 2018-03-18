@@ -23,9 +23,6 @@ env:
   #* Application *#
   #** Common to all services **#
   - COMMON_ENV=TEST
-  - COMMON_DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
-  - COMMON_DATABASE_MIGRATIONS_DIR=./migrations
-  - COMMON_DATABASE_MIGRATIONS_TABLE=migrations_identity
   - COMMON_LOGGLY_TOKEN=null
   - COMMON_LOGGLY_SUBDOMAIN=null
   - COMMON_ROLLBAR_TOKEN=null
@@ -34,6 +31,9 @@ env:
   - IDENTITY_PORT=10002
   - IDENTITY_ORIGIN=null
   - IDENTITY_CLIENTS=null
+  - IDENTITY_DATABASE_URL=postgresql://postgres@postgres.test.truesparrow/truesparrow
+  - IDENTITY_DATABASE_MIGRATIONS_DIR=./migrations
+  - IDENTITY_DATABASE_MIGRATIONS_TABLE=migrations_identity
   - IDENTITY_AUTH0_CLIENT_ID=null
   - IDENTITY_AUTH0_CLIENT_SECRET=null
   - IDENTITY_AUTH0_DOMAIN=null

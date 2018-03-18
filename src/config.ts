@@ -6,10 +6,6 @@ import { Auth0ServerConfig } from '@truesparrow/identity-sdk-js'
 
 export const ENV: Env = parseEnv(getFromEnv('COMMON_ENV'));
 
-export const DATABASE_URL: string = getFromEnv('COMMON_DATABASE_URL');
-export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('COMMON_DATABASE_MIGRATIONS_DIR');
-export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('COMMON_DATABASE_MIGRATIONS_TABLE');
-
 export const LOGGLY_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_TOKEN') : null;
 export const LOGGLY_SUBDOMAIN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_SUBDOMAIN') : null;
 export const ROLLBAR_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_ROLLBAR_TOKEN') : null;
@@ -22,6 +18,10 @@ export const PORT: number = parseInt(getFromEnv('IDENTITY_PORT'), 10);
 export const ORIGIN: string = getFromEnv('IDENTITY_ORIGIN');
 
 export const CLIENTS: string[] = getFromEnv('IDENTITY_CLIENTS').split(',');
+
+export const DATABASE_URL: string = getFromEnv('IDENTITY_DATABASE_URL');
+export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('IDENTITY_DATABASE_MIGRATIONS_DIR');
+export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('IDENTITY_DATABASE_MIGRATIONS_TABLE');
 
 export const AUTH0_SERVER_CONFIG: Auth0ServerConfig = {
     clientId: getFromEnv('IDENTITY_AUTH0_CLIENT_ID'),
