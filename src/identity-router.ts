@@ -11,7 +11,7 @@ import * as NodeCache from 'node-cache'
 import { ArrayOf, MarshalFrom } from 'raynor'
 import * as r from 'raynor'
 
-import { isLocal } from '@truesparrow/common-js'
+import { isNotOnServer } from '@truesparrow/common-js'
 import {
     newCommonApiServerMiddleware,
     newCommonServerMiddleware,
@@ -59,7 +59,7 @@ export function newIdentityRouter(
     const identityRouter = express.Router();
 
     identityRouter.use(cookieParser());
-    if (isLocal(config.env)) {
+    if (isNotOnServer(config.env)) {
         identityRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     } else {
         identityRouter.use(newCommonServerMiddleware(
