@@ -1,7 +1,9 @@
+import { config } from 'dotenv'
+
 import { Env, parseEnv, isOnServer } from '@truesparrow/common-js'
 import { getFromEnv } from '@truesparrow/common-server-js'
 import { Auth0ServerConfig } from '@truesparrow/identity-sdk-js'
-import { config } from 'dotenv';
+
 
 config();
 
