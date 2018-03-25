@@ -14,7 +14,7 @@ import * as r from 'raynor'
 import { isNotOnServer } from '@truesparrow/common-js'
 import {
     newCommonApiServerMiddleware,
-    newCommonServerMiddleware,
+    // newCommonServerMiddleware,
     newLocalCommonServerMiddleware,
     Request
 } from '@truesparrow/common-server-js'
@@ -59,15 +59,15 @@ export function newIdentityRouter(
     const identityRouter = express.Router();
 
     identityRouter.use(cookieParser());
-    if (isNotOnServer(config.env)) {
+    if (true || isNotOnServer(config.env)) {
         identityRouter.use(newLocalCommonServerMiddleware(config.name, config.env, config.forceDisableLogging));
     } else {
-        identityRouter.use(newCommonServerMiddleware(
-            config.name,
-            config.env,
-            config.logglyToken as string,
-            config.logglySubdomain as string,
-            config.rollbarToken as string));
+        // identityRouter.use(newCommonServerMiddleware(
+        //     config.name,
+        //     config.env,
+        //     config.logglyToken as string,
+        //     config.logglySubdomain as string,
+        //     config.rollbarToken as string));
     }
     identityRouter.use(compression({ threshold: 0 }));
     identityRouter.use(newCommonApiServerMiddleware(config.clients));
