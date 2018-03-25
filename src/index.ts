@@ -5,6 +5,7 @@ import 'log-timestamp'
 import * as NodeCache from 'node-cache'
 
 import { isForDevelopment } from '@truesparrow/common-js'
+import { newHealthCheckRouter } from '@truesparrow/common-server-js'
 
 import * as config from './config'
 import { newIdentityRouter } from './identity-router'
@@ -36,6 +37,7 @@ async function main() {
     };
     const repository = new Repository(conn);
     const identityRouter = newIdentityRouter(appConfig, auth0Client, auth0Cache, repository);
+    const healthCheckRouter = newHealthCheckRouter();
     const testRouter = newTestRouter(appConfig, auth0Cache, repository);
 
     console.log('Starting up');
@@ -48,6 +50,7 @@ async function main() {
     const app = express();
     app.disable('x-powered-by');
     app.use('/api', identityRouter);
+    app.use('/status', healthCheckRouter);
     if (isForDevelopment(config.ENV)) {
         app.use('/test', testRouter);
     }
