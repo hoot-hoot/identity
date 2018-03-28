@@ -1,6 +1,6 @@
 {
     "name": "@truesparrow/identity",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "description": "The identity service.",
     "author": "CHM SQRT2 Team",
     "scripts": {

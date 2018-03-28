@@ -13,7 +13,7 @@ export const ENV: Env = parseEnv(getFromEnv('COMMON_ENV'));
 
 export const LOGGLY_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_TOKEN') : null;
 export const LOGGLY_SUBDOMAIN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_SUBDOMAIN') : null;
-export const ROLLBAR_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_ROLLBAR_TOKEN') : null;
+export const ROLLBAR_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_ROLLBAR_SERVER_TOKEN') : null;
 
 // Specific to identity service
 
