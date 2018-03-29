@@ -24,7 +24,13 @@ async function main() {
     });
     const conn = knex({
         client: 'pg',
-        connection: config.DATABASE_URL
+        connection: {
+            host: config.POSTGRES_HOST,
+            port: config.POSTGRES_PORT,
+            database: config.POSTGRES_DATABASE,
+            user: config.POSTGRES_USERNAME,
+            password: config.POSTGRES_PASSWORD
+        }
     });
     const appConfig = {
         env: config.ENV,
