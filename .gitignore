@@ -14,3 +14,4 @@
 # Secrets files
 config/gcp-*-key.json
 config/env.identity
+config/env.identity.test
