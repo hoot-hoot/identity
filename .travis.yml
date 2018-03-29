@@ -20,9 +20,6 @@ addons:
 
 env:
   global:
-  - POSTGRES_DATABASE=truesparrow
-  - POSTGRES_USERNAME=truesparrow
-  - POSTGRES_PASSWORD=truesparrow
   - PGSSLMODE=require
   - GEMFURY_USER=truesparrow
   # GEMFURY_API_KEY=???
@@ -33,9 +30,9 @@ install:
 - npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
 
 before_script:
-- psql -c "create database ${POSTGRES_DATABASE};" -U postgres
-- psql -c "create user ${POSTGRES_USERNAME} with password '${POSTGRES_TRUESPARROW}';" -U postgres
-- psql -c "grant all on database ${POSTGRES_DATABASE} to ${POSTGRES_USERNAME}" -U postgres
+- psql -c "create database truesparrow;" -U postgres
+- psql -c "create user truesparrow with password 'truesparrow';" -U postgres
+- psql -c "grant all on database truesparrow to truesparrow;" -U postgres
 - openssl aes-256-cbc -K $encrypted_5a24758dc1a9_key -iv $encrypted_5a24758dc1a9_iv -in config/env.identity.test.enc -out config/env.identity -d
 - openssl aes-256-cbc -K $encrypted_cc8365da97ab_key -iv $encrypted_cc8365da97ab_iv -in config/gcp-ci-builder-key.json.enc -out config/gcp-ci-builder-key.json -d -d
 
