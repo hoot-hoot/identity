@@ -29,11 +29,10 @@ async function main() {
     const appConfig = {
         env: config.ENV,
         name: config.NAME,
-        clients: config.CLIENTS,
         forceDisableLogging: false,
-        logglyToken: config.LOGGLY_TOKEN,
-        logglySubdomain: config.LOGGLY_SUBDOMAIN,
-        rollbarToken: config.ROLLBAR_TOKEN
+        logglyToken: null,
+        logglySubdomain: null,
+        rollbarToken: null
     };
     const repository = new Repository(conn);
     const identityRouter = newIdentityRouter(appConfig, auth0Client, auth0Cache, repository);
@@ -55,8 +54,8 @@ async function main() {
         app.use('/test', testRouter);
     }
 
-    app.listen(config.PORT, config.ADDRESS, () => {
-        console.log(`Started ${config.NAME} service on ${config.ADDRESS}:${config.PORT}`);
+    app.listen(config.PORT, '0.0.0.0', () => {
+        console.log(`Started ${config.NAME} service on ${config.PORT}`);
     });
 }
 

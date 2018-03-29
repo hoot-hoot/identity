@@ -33,7 +33,6 @@ describe('IdentityRouter', () => {
     const localAppConfig: AppConfig = {
         env: Env.Local,
         name: 'identity',
-        clients: ['core'],
         forceDisableLogging: true,
         logglyToken: null,
         logglySubdomain: null,
@@ -43,7 +42,6 @@ describe('IdentityRouter', () => {
     const stagingAppConfig: AppConfig = {
         env: Env.Staging,
         name: 'identity',
-        clients: ['core'],
         forceDisableLogging: true,
         logglyToken: 'A FAKE TOKEN',
         logglySubdomain: 'a-fake-subdomain',
@@ -163,7 +161,6 @@ describe('IdentityRouter', () => {
 
             await appAgent
                 .post('/sessions')
-                .set('Origin', 'core')
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect(HttpStatus.CREATED)
                 .then(response => {
@@ -181,7 +178,6 @@ describe('IdentityRouter', () => {
             await appAgent
                 .post('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, 'bad data here')
-                .set('Origin', 'core')
                 .expect(HttpStatus.CREATED)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -206,7 +202,6 @@ describe('IdentityRouter', () => {
             await appAgent
                 .post('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
-                .set('Origin', 'core')
                 .expect(HttpStatus.OK)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -223,7 +218,6 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/sessions', 'post');
         badRepository('/sessions', 'post', { getOrCreateSession: (_t: SessionToken | null, _c: Date) => { } }, new Map<string, [Error, number]>([
             ['INTERNAL_SERVER_ERROR when the repository errors', [new Error('An error occured'), HttpStatus.INTERNAL_SERVER_ERROR]]
         ]));
@@ -238,7 +232,6 @@ describe('IdentityRouter', () => {
             await appAgent
                 .get('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
-                .set('Origin', 'core')
                 .expect(HttpStatus.OK)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -254,7 +247,6 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/sessions', 'get');
         badSessionToken('/sessions', 'get');
         badRepository('/sessions', 'get', { getSession: (_t: SessionToken) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the session is not present', [new SessionNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
@@ -272,7 +264,6 @@ describe('IdentityRouter', () => {
                 .delete('/sessions')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSession.xsrfToken)
-                .set('Origin', 'core')
                 .expect(HttpStatus.NO_CONTENT)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Content-Encoding', 'gzip')
@@ -286,7 +277,6 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/sessions', 'delete');
         badSessionToken('/sessions', 'delete');
         badXsrfToken('/sessions', 'delete');
         badRepository('/sessions', 'delete', { removeSession: (_t: SessionToken, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
@@ -306,7 +296,6 @@ describe('IdentityRouter', () => {
                 .post('/sessions/agree-to-cookie-policy')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionToken)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSession.xsrfToken)
-                .set('Origin', 'core')
                 .expect(HttpStatus.OK)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -322,7 +311,6 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/sessions/agree-to-cookie-policy', 'post');
         badSessionToken('/sessions/agree-to-cookie-policy', 'post');
         badXsrfToken('/sessions/agree-to-cookie-policy', 'post');
         badRepository('/sessions/agree-to-cookie-policy', 'post', { agreeToCookiePolicyForSession: (_t: SessionToken, _d: Date, _x: string) => { } }, new Map<string, [Error, number]>([
@@ -346,7 +334,6 @@ describe('IdentityRouter', () => {
                 .post('/users')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSessionWithUser.xsrfToken)
-                .set('Origin', 'core')
                 .expect(HttpStatus.CREATED)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -375,7 +362,6 @@ describe('IdentityRouter', () => {
                 .post('/users')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
                 .set(XSRF_TOKEN_HEADER_NAME, theSessionWithUser.xsrfToken)
-                .set('Origin', 'core')
                 .expect(HttpStatus.OK)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -392,7 +378,6 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/users', 'post');
         badSessionToken('/users', 'post');
         badXsrfToken('/users', 'post');
         badAuth0('/users', 'post', new Map<string, [string, number]>([
@@ -418,7 +403,6 @@ describe('IdentityRouter', () => {
             await appAgent
                 .get('/users')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
-                .set('Origin', 'core')
                 .expect(HttpStatus.OK)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -434,7 +418,6 @@ describe('IdentityRouter', () => {
                 });
         });
 
-        badOrigins('/users', 'get');
         badSessionToken('/users', 'get');
         badAuth0('/users', 'get', new Map<string, [string, number]>([
             ['UNAUTHORIZED when the token was not accepted', ['Unauthorized', HttpStatus.UNAUTHORIZED]],
@@ -456,7 +439,6 @@ describe('IdentityRouter', () => {
             await appAgent
                 .get('/users-info?ids=%5B1%2C2%5D') // ids=[1,2]
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
-                .set('Origin', 'core')
                 .expect(HttpStatus.OK)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -478,7 +460,6 @@ describe('IdentityRouter', () => {
             await appAgent
                 .get('/users-info')
                 .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
-                .set('Origin', 'core')
                 .expect(HttpStatus.BAD_REQUEST)
                 .expect('Content-Type', 'application/json; charset=utf-8')
                 .expect('Transfer-Encoding', 'chunked')
@@ -504,7 +485,6 @@ describe('IdentityRouter', () => {
                 await appAgent
                     .get(`/users-info?ids=${badIds}`)
                     .set(SESSION_TOKEN_HEADER_NAME, JSON.stringify(sessionTokenMarshaller.pack(theSessionTokenWithUser)))
-                    .set('Origin', 'core')
                     .expect(HttpStatus.BAD_REQUEST)
                     .expect('Content-Type', 'application/json; charset=utf-8')
                     .expect('Transfer-Encoding', 'chunked')
@@ -520,7 +500,6 @@ describe('IdentityRouter', () => {
             });
         }
 
-        badOrigins('/users-info?ids=%5B1%2C2%5D', 'get');
         badSessionToken('/users-info?ids=%5B1%2C2%5D', 'get');
         badRepository('/users-info?ids=%5B1%2C2%5D', 'get', { getUsersInfo: (_ids: number[]) => { } }, new Map<string, [Error, number]>([
             ['NOT_FOUND when the user is not present', [new UserNotFoundError('Not found'), HttpStatus.NOT_FOUND]],
@@ -550,39 +529,6 @@ describe('IdentityRouter', () => {
             case 'delete':
                 return appAgent.delete(uri);
         }
-    }
-
-    function badOrigins(uri: string, method: Method) {
-        it('should return BAD_REQUEST when there is no origin', async () => {
-            const restOfTest = newAgent(uri, method);
-
-            await restOfTest
-                .expect(HttpStatus.BAD_REQUEST)
-                .expect('Transfer-Encoding', 'chunked')
-                .expect('Connection', 'close')
-                .then(response => {
-                    expect(response.header).contain.keys('transfer-encoding', 'date', 'connection');
-                    expect(Object.keys(response.header)).has.length(3);
-
-                    expect(response.text).to.have.length(0);
-                });
-        });
-
-        it('should return BAD_REQUEST when the origin is not allowed', async () => {
-            const restOfTest = newAgent(uri, method);
-
-            await restOfTest
-                .set('Origin', 'bad-origin')
-                .expect(HttpStatus.BAD_REQUEST)
-                .expect('Transfer-Encoding', 'chunked')
-                .expect('Connection', 'close')
-                .then(response => {
-                    expect(response.header).contain.keys('transfer-encoding', 'date', 'connection');
-                    expect(Object.keys(response.header)).has.length(3);
-
-                    expect(response.text).to.have.length(0);
-                });
-        });
     }
 
     function badSessionToken(uri: string, method: Method) {

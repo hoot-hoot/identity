@@ -1,6 +1,6 @@
 import { config } from 'dotenv'
 
-import { Env, parseEnv, isOnServer } from '@truesparrow/common-js'
+import { Env, parseEnv } from '@truesparrow/common-js'
 import { getFromEnv } from '@truesparrow/common-server-js'
 import { Auth0ServerConfig } from '@truesparrow/identity-sdk-js'
 
@@ -11,20 +11,20 @@ config();
 
 export const ENV: Env = parseEnv(getFromEnv('COMMON_ENV'));
 
-export const LOGGLY_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_TOKEN') : null;
-export const LOGGLY_SUBDOMAIN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_LOGGLY_SUBDOMAIN') : null;
-export const ROLLBAR_TOKEN: string | null = isOnServer(ENV) ? getFromEnv('COMMON_ROLLBAR_SERVER_TOKEN') : null;
-
 // Specific to identity service
 
 export const NAME: string = 'identity';
-export const ADDRESS: string = getFromEnv('IDENTITY_ADDRESS');
-export const PORT: number = parseInt(getFromEnv('IDENTITY_PORT'), 10);
-export const ORIGIN: string = getFromEnv('IDENTITY_ORIGIN');
+export const HOST: string = getFromEnv('IDENTITY_SERVICE_HOST');
+export const PORT: number = parseInt(getFromEnv('IDENTITY_SERVICE_PORT'), 10);
+export const ORIGIN: string = `http://${HOST}:${PORT}`;
 
-export const CLIENTS: string[] = getFromEnv('IDENTITY_CLIENTS').split(',');
+const databaseHost = getFromEnv('POSTGRES_HOST');
+const databasePort = getFromEnv('POSTGRES_PORT');
+const databaseDatabase = getFromEnv('POSTGRES_DATABASE');
+const databaseUserName = getFromEnv('IDENTITY_DATABASE_USERNAME');
+const databasePassword = getFromEnv('IDENTITY_DATABASE_PASSWORD');
 
-export const DATABASE_URL: string = getFromEnv('IDENTITY_DATABASE_URL');
+export const DATABASE_URL: string = `postgresql://${databaseUserName}:${databasePassword}@${databaseHost}:${databasePort}/${databaseDatabase}`;
 export const DATABASE_MIGRATIONS_DIR: string = getFromEnv('IDENTITY_DATABASE_MIGRATIONS_DIR');
 export const DATABASE_MIGRATIONS_TABLE: string = getFromEnv('IDENTITY_DATABASE_MIGRATIONS_TABLE');
 

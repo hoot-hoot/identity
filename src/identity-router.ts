@@ -70,7 +70,7 @@ export function newIdentityRouter(
         //     config.rollbarToken as string));
     }
     identityRouter.use(compression({ threshold: 0 }));
-    identityRouter.use(newCommonApiServerMiddleware(config.clients));
+    identityRouter.use(newCommonApiServerMiddleware());
 
     identityRouter.post('/sessions', wrap(async (req: Request, res: express.Response) => {
         const currentSessionToken = extractSessionToken(req);
