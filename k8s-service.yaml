@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: identity
+spec:
+  selector:
+    service: identity
+    env: staging
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 10001
