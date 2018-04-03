@@ -31,6 +31,7 @@ env:
 before_install:
 - if [ ! -d ${HOME}/tools/google-cloud-sdk/bin ]; then
     mkdir -p ${HOME}/tools;
+    rm -rf ${HOME}/tools/google-cloud-sdk;
     curl https://sdk.cloud.google.com | bash /dev/stdin --disable-prompts --install-dir=${HOME}/tools;
     ${HOME}/tools/google-cloud-sdk/bin/gcloud init;
     ${HOME}/tools/google-cloud-sdk/bin/gcloud -q components update kubectl;
