@@ -8,7 +8,7 @@ sudo: required
 cache:
   directories:
     - node_modules
-    - "$HOME/tools/google-cloud-sdk"
+    - "$HOME/google-cloud-sdk"
 
 services:
   - postgresql
@@ -21,7 +21,9 @@ addons:
 
 env:
   global:
-  - PATH=$PATH:${HOME}/tools/google-cloud-sdk/bin
+  - PATH=$PATH:${HOME}/google-cloud-sdk/bin
+  - GCP_STAGING_PROJECT=chmsqrt2-truesparrow-staging
+  - GCP_STAGING_ZONE=europe-west1-b
   - CLOUDSDK_CORE_DISABLE_PROMPTS=1
   - PGSSLMODE=require
   - GEMFURY_USER=truesparrow
@@ -29,13 +31,13 @@ env:
   - secure: "Ysbvoo72qw5Sfh5rNaVWN0y5pj62tRbxwB3Ayt4/Z117TH7RaQeGVLZvlbi70xZESL1/pPEmzgE6gh7i8edtFTJyLevoxhsOvBICM/MstwbkAOqIq7wzbKUorGwwrJoYfp9oz+A8Pl9DTBu8wp5qG/mpAWE5sIdwUNwEjhaqr0xWfm5313FWUDkeQLxQESHudDryFMxRrJy41sRLgst2Tkq8OmBZEqatl5SaEWtMnOCpVqeRaxQVzOrzdCIRdNPUC95XihIAtAl5oqncUa7yOKYR7sovTmP03xuHgZjQ9MEEe5xu1JVoYQdln6w3SaANjc7isyqb9KGB7OXte4NlwfivsHQNGwXEZSSxKJQNmhE5VXg9RT8HA6MnkZxeFgp5y4LU0u00S/g0X7RTk5n9lEOEV9qBGFEPNIKUkZNVt+HhvkV2GPR4O6yo+2yNJil4cvNQmf6RGPOg078IqQHmBBOFEkz0cBtsOJONMweZZlSCLmryxahr1HdvHGIynleiJ4+EX+aTLJA1dtlH0j0mX64u4P2q4W3DHvXZv4b7hRHZ/NuWjnq71b5PCkEF+cDuwidYTK1vtQuAd4fXfpMCPS5/h83/NJMdJUbYq/jxg8J71ndQF7ja7hH9PFGmTzKisOeLEtDDfoFvKTQtsy6U2NUeYkPjOmHIOxqoEkI8MMY="
 
 before_install:
-- if [ ! -d ${HOME}/tools/google-cloud-sdk/bin ]; then
-    mkdir -p ${HOME}/tools;
-    rm -rf ${HOME}/tools/google-cloud-sdk;
-    curl https://sdk.cloud.google.com | bash /dev/stdin --disable-prompts --install-dir=${HOME}/tools;
-    ${HOME}/tools/google-cloud-sdk/bin/gcloud init;
-    ${HOME}/tools/google-cloud-sdk/bin/gcloud -q components update kubectl;
+- if [ ! -d ${HOME}/google-cloud-sdk/bin ]; then
+    rm -rf ${HOME}/google-cloud-sdk;
+    curl https://sdk.cloud.google.com | bash;
+    gcloud init;
+    gcloud -q components update kubectl;
   fi
+- source ${HOME}/google-cloud-sdk/path.bash.inc
 
 install:
 - npm install --registry=https://npm-proxy.fury.io/${GEMFURY_API_KEY}/${GEMFURY_USER}/ --progress=false
@@ -72,8 +74,9 @@ deploy:
 - provider: script
   skip_cleanup: true
   script:
-    ${HOME}/tools/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file config/gcp-ci-builder-key.json;
-    ${HOME}/tools/google-cloud-sdk/bin/gcloud config set project chmsqrt2-truesparrow-staging;
+    gcloud config set project $GCP_STAGING_PROJECT;
+    gcloud auth activate-service-account --key-file config/gcp-ci-builder-key.json;
+    gcloud container clusters get-credentials chmsqrt2-truesparrow-staging-cluster --zone=$GCP_STAGING_ZONE
     kubectl apply -f k8s-service.yaml --record;
     kubectl apply -f k8s-deployment.yaml --record;
     kubectl set image deployment/identity identity=eu.gcr.io/chmsqrt2-truesparrow-common/identity:$TRAVIS_TAG
