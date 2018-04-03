@@ -33,8 +33,7 @@ env:
 before_install:
 - if [ ! -d ${HOME}/google-cloud-sdk/bin ]; then
     rm -rf ${HOME}/google-cloud-sdk;
-    curl https://sdk.cloud.google.com | bash;
-    gcloud init;
+    curl https://sdk.cloud.google.com | bash /dev/stdin --disable-prompts;
     gcloud -q components update kubectl;
   fi
 - source ${HOME}/google-cloud-sdk/path.bash.inc
