@@ -75,7 +75,7 @@ deploy:
   script:
     ${HOME}/google-cloud-sdk/bin/gcloud config set project $GCP_STAGING_PROJECT;
     ${HOME}/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file config/gcp-ci-builder-key.json;
-    ${HOME}/google-cloud-sdk/bin/gcloud container clusters get-credentials chmsqrt2-truesparrow-staging-cluster --zone=$GCP_STAGING_ZONE
+    ${HOME}/google-cloud-sdk/bin/gcloud container clusters get-credentials chmsqrt2-truesparrow-staging-cluster --zone=$GCP_STAGING_ZONE;
     which kubectl;
     kubectl apply -f k8s-service.yaml --record;
     kubectl apply -f k8s-deployment.yaml --record;
