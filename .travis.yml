@@ -29,7 +29,7 @@ env:
   - GCP_STAGING_PROJECT=chmsqrt2-truesparrow-staging
   - GCP_STAGING_ZONE=europe-west1-b
   - CLOUDSDK_CORE_DISABLE_PROMPTS=1
-  - GOOGLE_APPLICATION_CREDENTIALS=${HOME}/config/gcp-ci-builder-key.json
+  - GOOGLE_APPLICATION_CREDENTIALS=config/gcp-ci-builder-key.json
 
 before_install:
 - if [ ! -d ${HOME}/google-cloud-sdk/bin ]; then
