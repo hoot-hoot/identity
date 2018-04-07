@@ -5,7 +5,6 @@ metadata:
 spec:
   selector:
     service: identity
-    env: staging
     tier: backend
   ports:
   - protocol: TCP
