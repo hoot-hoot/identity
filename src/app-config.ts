@@ -12,7 +12,7 @@ export interface AppConfig {
     name: string;
     /**
      * Disable all logging. Used for tests. Otherwise logs output to the console in {@link Env.Local}
-     * and {@link Env.Test} and to loggly in {@link Env.Staging} or {@link Env.Prod}
+     * and {@link Env.Test} and to loggly in {@link Env.Staging} or {@link Env.Live}
      */
     forceDisableLogging: boolean;
     /** The secret token for the Loggly logging service. */

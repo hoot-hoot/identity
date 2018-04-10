@@ -147,7 +147,7 @@ describe('IdentityRouter', () => {
         expect(identityRouter).is.not.null;
     });
 
-    it('can be constructed with prod settings', () => {
+    it('can be constructed with live settings', () => {
         const identityRouter = newIdentityRouter(stagingAppConfig, auth0Client as auth0.AuthenticationClient, auth0Cache as NodeCache, repository as Repository);
 
         expect(identityRouter).is.not.null;
