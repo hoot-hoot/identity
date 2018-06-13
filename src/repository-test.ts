@@ -72,18 +72,27 @@ describe('Repository', () => {
 
     const auth0ProfileJohnDoe: Auth0Profile = new Auth0Profile();
     auth0ProfileJohnDoe.name = 'John Doe';
+    auth0ProfileJohnDoe.firstName = 'John';
+    auth0ProfileJohnDoe.lastName = 'Doe';
+    auth0ProfileJohnDoe.emailAddress = 'john.doe@example.com';
     auth0ProfileJohnDoe.picture = 'https://example.com/picture.jpg';
     auth0ProfileJohnDoe.userId = 'x0bjohn';
     auth0ProfileJohnDoe.language = 'en';
 
     const auth0ProfileJohnnyDoe: Auth0Profile = new Auth0Profile();
     auth0ProfileJohnnyDoe.name = 'Johnny Doe';
+    auth0ProfileJohnnyDoe.firstName = 'Johnny';
+    auth0ProfileJohnnyDoe.lastName = 'Doe';
+    auth0ProfileJohnnyDoe.emailAddress = 'johnny.doe@example.com';
     auth0ProfileJohnnyDoe.picture = 'https://example.com/picture.jpg';
     auth0ProfileJohnnyDoe.userId = 'x0bjohn';
     auth0ProfileJohnnyDoe.language = 'en';
 
     const auth0ProfileJaneDoe: Auth0Profile = new Auth0Profile();
     auth0ProfileJaneDoe.name = 'Jane Doe';
+    auth0ProfileJaneDoe.firstName = 'Jane';
+    auth0ProfileJaneDoe.lastName = 'Doe';
+    auth0ProfileJaneDoe.emailAddress = 'jane.doe@example.com';
     auth0ProfileJaneDoe.picture = 'https://example.com/picture-jane.jpg';
     auth0ProfileJaneDoe.userId = 'x0bjane';
     auth0ProfileJaneDoe.language = 'en';
@@ -508,6 +517,9 @@ describe('Repository', () => {
             expect((newSession.user as PrivateUser).state).to.eql(UserState.Active);
             expect((newSession.user as PrivateUser).role).to.eql(Role.Regular);
             expect((newSession.user as PrivateUser).name).to.eql(auth0ProfileJohnDoe.name);
+            expect((newSession.user as PrivateUser).firstName).to.eql(auth0ProfileJohnDoe.firstName);
+            expect((newSession.user as PrivateUser).lastName).to.eql(auth0ProfileJohnDoe.lastName);
+            expect((newSession.user as PrivateUser).emailAddress).to.eql(auth0ProfileJohnDoe.emailAddress);
             expect((newSession.user as PrivateUser).pictureUri).to.eql(auth0ProfileJohnDoe.picture);
             expect((newSession.user as PrivateUser).language).to.eql(auth0ProfileJohnDoe.language);
             expect((newSession.user as PrivateUser).timeCreated).to.eql(rightLater);
@@ -649,6 +661,9 @@ describe('Repository', () => {
             expect((lastSession.user as PrivateUser).state).to.eql(UserState.Active);
             expect((lastSession.user as PrivateUser).role).to.eql(Role.Regular);
             expect((lastSession.user as PrivateUser).name).to.eql(auth0ProfileJohnnyDoe.name);
+            expect((lastSession.user as PrivateUser).firstName).to.eql(auth0ProfileJohnnyDoe.firstName);
+            expect((lastSession.user as PrivateUser).lastName).to.eql(auth0ProfileJohnnyDoe.lastName);
+            expect((lastSession.user as PrivateUser).emailAddress).to.eql(auth0ProfileJohnnyDoe.emailAddress);
             expect((lastSession.user as PrivateUser).pictureUri).to.eql(auth0ProfileJohnnyDoe.picture);
             expect((lastSession.user as PrivateUser).language).to.eql(auth0ProfileJohnnyDoe.language);
             expect((lastSession.user as PrivateUser).timeCreated).to.eql(rightLater);
@@ -861,6 +876,9 @@ describe('Repository', () => {
             expect((retrievedSession.user as PrivateUser).state).to.eql(UserState.Active);
             expect((retrievedSession.user as PrivateUser).role).to.eql(Role.Regular);
             expect((retrievedSession.user as PrivateUser).name).to.eql(auth0ProfileJohnnyDoe.name);
+            expect((retrievedSession.user as PrivateUser).firstName).to.eql(auth0ProfileJohnnyDoe.firstName);
+            expect((retrievedSession.user as PrivateUser).lastName).to.eql(auth0ProfileJohnnyDoe.lastName);
+            expect((retrievedSession.user as PrivateUser).emailAddress).to.eql(auth0ProfileJohnnyDoe.emailAddress);
             expect((retrievedSession.user as PrivateUser).pictureUri).to.eql(auth0ProfileJohnnyDoe.picture);
             expect((retrievedSession.user as PrivateUser).language).to.eql(auth0ProfileJohnnyDoe.language);
             expect((retrievedSession.user as PrivateUser).timeCreated).to.eql(rightLater);
@@ -1004,6 +1022,9 @@ describe('Repository', () => {
             expect(users[0].state).to.eql(UserState.Active);
             expect(users[0].role).to.eql(Role.Regular);
             expect(users[0].name).to.eql(auth0ProfileJohnDoe.name);
+            expect(users[0].firstName).to.eql(auth0ProfileJohnDoe.firstName);
+            expect(users[0].lastName).to.eql(auth0ProfileJohnDoe.lastName);
+            expect(users[0].emailAddress).to.eql(auth0ProfileJohnDoe.emailAddress);
             expect(users[0].pictureUri).to.eql(auth0ProfileJohnDoe.picture);
             expect(users[0].language).to.eql(auth0ProfileJohnDoe.language);
             expect(users[0].timeCreated).to.eql(rightLater);
@@ -1028,6 +1049,9 @@ describe('Repository', () => {
             expect(users[0].state).to.eql(UserState.Active);
             expect(users[0].role).to.eql(Role.Regular);
             expect(users[0].name).to.eql(auth0ProfileJohnDoe.name);
+            expect(users[0].firstName).to.eql(auth0ProfileJohnDoe.firstName);
+            expect(users[0].lastName).to.eql(auth0ProfileJohnDoe.lastName);
+            expect(users[0].emailAddress).to.eql(auth0ProfileJohnDoe.emailAddress);
             expect(users[0].pictureUri).to.eql(auth0ProfileJohnDoe.picture);
             expect(users[0].language).to.eql(auth0ProfileJohnDoe.language);
             expect(users[0].timeCreated).to.eql(rightLater);
@@ -1037,6 +1061,9 @@ describe('Repository', () => {
             expect(users[1].state).to.eql(UserState.Active);
             expect(users[1].role).to.eql(Role.Regular);
             expect(users[1].name).to.eql(auth0ProfileJaneDoe.name);
+            expect(users[1].firstName).to.eql(auth0ProfileJaneDoe.firstName);
+            expect(users[1].lastName).to.eql(auth0ProfileJaneDoe.lastName);
+            expect(users[1].emailAddress).to.eql(auth0ProfileJaneDoe.emailAddress);
             expect(users[1].pictureUri).to.eql(auth0ProfileJaneDoe.picture);
             expect(users[1].language).to.eql(auth0ProfileJaneDoe.language);
             expect(users[1].timeCreated).to.eql(rightTooLate);
@@ -1063,6 +1090,9 @@ describe('Repository', () => {
             expect(users[0].state).to.eql(UserState.Active);
             expect(users[0].role).to.eql(Role.Regular);
             expect(users[0].name).to.eql(auth0ProfileJaneDoe.name);
+            expect(users[0].firstName).to.eql(auth0ProfileJaneDoe.firstName);
+            expect(users[0].lastName).to.eql(auth0ProfileJaneDoe.lastName);
+            expect(users[0].emailAddress).to.eql(auth0ProfileJaneDoe.emailAddress);
             expect(users[0].pictureUri).to.eql(auth0ProfileJaneDoe.picture);
             expect(users[0].language).to.eql(auth0ProfileJaneDoe.language);
             expect(users[0].timeCreated).to.eql(rightTooLate);

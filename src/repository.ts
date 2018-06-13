@@ -615,6 +615,9 @@ export class Repository {
                 user.state = dbUser['user_state'];
                 user.role = dbUser['user_role'];
                 user.name = auth0Profile.name;
+                user.firstName = auth0Profile.firstName;
+                user.lastName = auth0Profile.lastName;
+                user.emailAddress = auth0Profile.emailAddress;
                 user.pictureUri = auth0Profile.picture;
                 user.language = auth0Profile.language;
                 user.timeCreated = new Date(dbUser['user_time_created']);
@@ -638,6 +641,9 @@ export class Repository {
         user.state = dbUser['user_state'];
         user.role = dbUser['user_role'];
         user.name = auth0Profile.name;
+        user.firstName = auth0Profile.firstName;
+        user.lastName = auth0Profile.lastName;
+        user.emailAddress = auth0Profile.emailAddress;
         user.pictureUri = auth0Profile.picture;
         user.language = auth0Profile.language;
         user.timeCreated = new Date(dbUser['user_time_created']);
