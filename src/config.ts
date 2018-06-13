@@ -26,6 +26,9 @@ export const AUTH0_SERVER_CONFIG: Auth0ServerConfig = {
     clientId: getFromEnv('AUTH0_CLIENT_ID'),
     clientSecret: getFromEnv('AUTH0_CLIENT_SECRET'),
     domain: getFromEnv('AUTH0_DOMAIN'),
-    loginCallbackUri: '' // Not used here
+    loginCallbackUri: '', // Not used here
+    styleLogoUri: '', // Not used here
+    stylePrimaryColor: '', // Not used here
+    styleApplicationName: '' // Not used here
 };
 export const AUTH0_CACHE_TTL_IN_SECS: number = 10 * 60; // 10 minutes

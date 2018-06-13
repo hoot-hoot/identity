@@ -472,6 +472,9 @@ export class Repository {
         session.user.state = UserState.Active;
         session.user.role = Role.Regular;
         session.user.name = auth0Profile.name;
+        session.user.firstName = auth0Profile.firstName;
+        session.user.lastName = auth0Profile.lastName;
+        session.user.emailAddress = auth0Profile.emailAddress;
         session.user.pictureUri = auth0Profile.picture;
         session.user.language = auth0Profile.language;
         session.user.timeCreated = dbUserTimeCreated;

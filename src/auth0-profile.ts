@@ -16,6 +16,15 @@ export class Auth0Profile {
     @MarshalWith(r.StringMarshaller)
     name: string;
 
+    @MarshalWith(r.StringMarshaller, 'given_name')
+    firstName: string;
+
+    @MarshalWith(r.StringMarshaller, 'family_name')
+    lastName: string;
+
+    @MarshalWith(r.StringMarshaller, 'email')
+    emailAddress: string;
+
     /** An https Uri for a picture of the user */
     @MarshalWith(r.WebUriMarshaller)
     picture: string;
