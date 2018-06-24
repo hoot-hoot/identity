@@ -3,7 +3,7 @@
 /** Imports. Also so typedoc works correctly. */
 import * as crypto from 'crypto'
 import * as r from 'raynor'
-import { MarshalWith, TryInOrder } from 'raynor'
+import { MarshalWith, TryInOrder, OptionalOf } from 'raynor'
 
 import { LanguageFromLocaleMarshaller, LanguageMarshaller } from '@truesparrow/common-js'
 
@@ -16,11 +16,11 @@ export class Auth0Profile {
     @MarshalWith(r.StringMarshaller)
     name: string;
 
-    @MarshalWith(r.StringMarshaller, 'given_name')
-    firstName: string;
+    @MarshalWith(OptionalOf(r.StringMarshaller), 'given_name')
+    firstName: string | null;
 
-    @MarshalWith(r.StringMarshaller, 'family_name')
-    lastName: string;
+    @MarshalWith(OptionalOf(r.StringMarshaller), 'family_name')
+    lastName: string | null;
 
     @MarshalWith(r.StringMarshaller, 'email')
     emailAddress: string;
